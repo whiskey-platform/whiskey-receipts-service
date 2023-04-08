@@ -4,8 +4,9 @@ import { transpileSchema } from '@middy/validator/transpile';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { FromSchema } from 'json-schema-to-ts';
 import { ulid } from 'ulid';
-
 import { db } from '@whiskey-receipts-service/core/db/db';
+import { S3Service } from '@whiskey-receipts-service/core/services/s3.service';
+import { Bucket } from 'sst/node/bucket';
 
 const eventSchema = {
   type: 'object',
@@ -23,6 +24,8 @@ const eventSchema = {
   required: ['body'],
 } as const;
 type BodyModel = FromSchema<typeof eventSchema.properties.body>;
+
+const s3 = S3Service.live();
 
 const upload: APIGatewayProxyHandlerV2 = async (event) => {
   const body: BodyModel = JSON.parse(event.body!); // validated by middy
@@ -47,15 +50,30 @@ const upload: APIGatewayProxyHandlerV2 = async (event) => {
 
   const id = ulid(body.timestamp);
 
-  await db.insertInto('receipts').values({
-    id: id,
-    store_id: storeID,
-    timestamp: new Date(body.timestamp * 1000),
-    documentType: body.contentType,
-  });
+  await db
+    .insertInto('receipts')
+    .values({
+      id,
+      store_id: storeID!,
+      timestamp: new Date(body.timestamp),
+      documentType: 'application/pdf',
+    })
+    .execute();
+
+  const objectKey = s3.objectKey(id, body.contentType);
+  const url = await s3.getUploadLink(
+    objectKey,
+    Bucket.ReceiptsBucket.bucketName,
+    body.contentType
+  );
+
   return {
     statusCode: 200,
-    body: event.body,
+    body: JSON.stringify({
+      message: 'successfully saved receipt',
+      receiptId: id,
+      uploadUrl: url,
+    }),
   };
 };
 
