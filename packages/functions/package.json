@@ -1,0 +1,20 @@
+{
+  "name": "@whiskey-receipts-service/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.114",
+    "@types/node": "^18.15.11",
+    "sst": "^2.5.1"
+  },
+  "dependencies": {
+    "@middy/core": "^4.2.8",
+    "@middy/validator": "^4.2.8",
+    "json-schema-to-ts": "^2.7.2",
+    "ulid": "^2.3.0"
+  }
+}
