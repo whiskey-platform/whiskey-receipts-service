@@ -4,13 +4,13 @@ importers:
 
   .:
     specifiers:
-      '@tsconfig/node16': ^1.0.3
+      '@tsconfig/node18': ^1.0.1
       aws-cdk-lib: 2.72.1
       constructs: 10.1.156
       sst: ^2.5.1
       typescript: ^5.0.4
     devDependencies:
-      '@tsconfig/node16': 1.0.3
+      '@tsconfig/node18': 1.0.1
       aws-cdk-lib: 2.72.1_constructs@10.1.156
       constructs: 10.1.156
       sst: 2.5.1
@@ -2388,8 +2388,8 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@tsconfig/node16/1.0.3:
-    resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
+  /@tsconfig/node18/1.0.1:
+    resolution: {integrity: sha512-sNFeK6X2ATlhlvzyH4kKYQlfHXE2f2/wxtB9ClvYXevWpmwkUT7VaSrjIN9E76Qebz8qP5JOJJ9jD3QoD/Z9TA==}
     dev: true
 
   /@types/aws-lambda/8.10.114:
