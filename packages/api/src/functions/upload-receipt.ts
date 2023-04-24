@@ -41,7 +41,7 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
       id,
       store_id: storeID!,
       timestamp: new Date(event.body.timestamp),
-      documentType: 'application/pdf',
+      document_type: 'application/pdf',
     })
     .execute();
 
