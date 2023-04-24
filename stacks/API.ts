@@ -3,7 +3,7 @@ import { DomainName } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { Infra } from './Infra';
 
 export function API({ stack, app }: StackContext) {
-  const { DATABASE_URL, bucket } = use(Infra);
+  const { DATABASE_URL, bucket, AUTH_BASE_URL } = use(Infra);
   const api = new Api(stack, 'api', {
     routes: {
       'POST /receipts': 'packages/api/src/functions/upload-receipt.handler',
@@ -21,5 +21,5 @@ export function API({ stack, app }: StackContext) {
         }
       : undefined,
   });
-  api.bind([DATABASE_URL, bucket]);
+  api.bind([DATABASE_URL, AUTH_BASE_URL, bucket]);
 }
