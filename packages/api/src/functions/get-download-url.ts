@@ -15,7 +15,7 @@ const s3 = S3Service.live();
 const getDownloadURL: APIGatewayProxyHandlerV2 = async event => {
   const { id } = event.queryStringParameters!;
 
-  const url = await s3.getObjectURL(id!, Bucket.ReceiptsBucket.bucketName);
+  const url = await s3.getObjectURL(`${id!}.pdf`, Bucket.ReceiptsBucket.bucketName);
 
   return {
     statusCode: 200,
