@@ -21,7 +21,7 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
   const returned: GetReceiptsResponseBodyItem[] = receipts.map(v => ({
     id: v.id,
     store: {
-      id: v.store_id ?? '',
+      id: v.store_id ?? 0,
       name: v.store_name ?? '',
     },
     documentType: v.document_type,

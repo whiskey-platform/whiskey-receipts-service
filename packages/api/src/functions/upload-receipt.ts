@@ -16,27 +16,24 @@ const s3 = S3Service.live();
 
 const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async event => {
   // get store
-  const store = await db
-    .selectFrom('stores')
-    .select('id')
-    .where('name', '=', event.body.storeName)
-    .executeTakeFirst();
+  const store = (
+    await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+  )[0];
 
   let storeID = store?.id;
 
   if (!store) {
-    const newStore = await db
-      .insertInto('stores')
-      .values({ name: event.body.storeName })
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    await db.insertInto('stores').values({ name: event.body.storeName }).execute();
+    const newStore = (
+      await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+    )[0];
     storeID = newStore.id;
   }
 
   const id = ulid(event.body.timestamp);
 
   await db
-    .insertInto('receipts')
+    .replaceInto('receipts')
     .values({
       id,
       store_id: storeID!,

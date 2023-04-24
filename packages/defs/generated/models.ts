@@ -14,7 +14,7 @@ export interface PostReceiptsRequestBody {
 export interface GetReceiptsResponseBodyItem {
   id: string;
   store: {
-    id: string;
+    id: number;
     name: string;
   };
   timestamp: string;

@@ -1,6 +1,6 @@
 import { Generated } from 'kysely';
 
 export interface Store {
-  id: Generated<string>;
+  id: Generated<number>;
   name: string;
 }

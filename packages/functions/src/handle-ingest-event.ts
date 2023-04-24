@@ -3,6 +3,7 @@ import { S3Service, db, logger } from '@whiskey-receipts-service/core';
 import { extractInput } from './lib/extraction';
 import { Bucket } from 'sst/node/bucket';
 import { ulid } from 'ulid';
+import { extension } from 'mime-types';
 
 const s3 = S3Service.live();
 
@@ -14,28 +15,29 @@ export const handler: SNSHandler = async event => {
 
     const id = ulid(input.timestamp);
 
-    s3.copyObject(input.sourceDataPath, Bucket.ReceiptsBucket.bucketName, id);
+    s3.copyObject(
+      input.sourceDataPath,
+      Bucket.ReceiptsBucket.bucketName,
+      `${id}.${extension(input.documentType)}`
+    );
 
     // get store
-    const store = await db
-      .selectFrom('stores')
-      .select('id')
-      .where('name', '=', input.store)
-      .executeTakeFirst();
+    const store = (
+      await db.selectFrom('stores').selectAll().where('name', '=', input.store).execute()
+    )[0];
 
     let storeID = store?.id;
 
     if (!store) {
-      const newStore = await db
-        .insertInto('stores')
-        .values({ name: input.store })
-        .returning('id')
-        .executeTakeFirstOrThrow();
+      await db.insertInto('stores').values({ name: input.store }).execute();
+      const newStore = (
+        await db.selectFrom('stores').selectAll().where('name', '=', input.store).execute()
+      )[0];
       storeID = newStore.id;
     }
 
     await db
-      .insertInto('receipts')
+      .replaceInto('receipts')
       .values({
         id,
         store_id: storeID!,

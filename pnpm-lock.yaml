@@ -93,9 +93,11 @@ importers:
       '@middy/core': ^4.2.8
       '@middy/validator': ^4.2.8
       '@types/aws-lambda': ^8.10.114
+      '@types/mime-types': ^2.1.1
       '@types/node': ^18.15.11
       '@whiskey-receipts-service/core': link:../core
       json-schema-to-ts: ^2.7.2
+      mime-types: ^2.1.35
       sst: ^2.5.1
       ulid: ^2.3.0
     dependencies:
@@ -103,9 +105,11 @@ importers:
       '@middy/validator': 4.2.8
       '@whiskey-receipts-service/core': link:../core
       json-schema-to-ts: 2.7.2
+      mime-types: 2.1.35
       ulid: 2.3.0
     devDependencies:
       '@types/aws-lambda': 8.10.114
+      '@types/mime-types': 2.1.1
       '@types/node': 18.15.11
       sst: 2.5.1
 
