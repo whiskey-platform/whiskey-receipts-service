@@ -1,6 +1,6 @@
-export interface ReceiptTable {
+export interface Receipt {
   id: string;
   store_id: string;
   timestamp: Date;
-  documentType: string;
+  document_type: string;
 }

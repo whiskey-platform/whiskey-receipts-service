@@ -1,0 +1,89 @@
+{
+  "type": "object",
+  "title": "Schema",
+  "definitions": {
+    "PostReceiptsRequestBody": {
+      "type": "object",
+      "properties": {
+        "storeName": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "number"
+        },
+        "contentType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "storeName",
+        "timestamp",
+        "contentType"
+      ],
+      "$schema": "http://json-schema.org/draft-04/schema#"
+    },
+    "GetReceiptsResponseBodyItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "store": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "documentType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "store",
+        "timestamp",
+        "documentType"
+      ],
+      "$schema": "http://json-schema.org/draft-04/schema#"
+    },
+    "ErrorSchema": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "trackingId": {
+          "type": "string"
+        }
+      },
+      "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+  },
+  "properties": {
+    "PostReceiptsRequestBody": {
+      "$ref": "#/definitions/PostReceiptsRequestBody"
+    },
+    "GetReceiptsResponseBodyItem": {
+      "$ref": "#/definitions/GetReceiptsResponseBodyItem"
+    },
+    "ErrorSchema": {
+      "$ref": "#/definitions/ErrorSchema"
+    }
+  }
+}

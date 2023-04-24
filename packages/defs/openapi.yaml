@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: Receipts API
+  version: 0.0.1
+
+paths:
+  /receipts:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostReceiptsRequestBody'
+
+      responses:
+        '200':
+          description:
+            The receipt was successfully added. Use the included S3 PUT URL to do the final upload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    const: Successfully saved receipt
+                  receiptId:
+                    type: string
+                  uploadUrl:
+                    type: string
+                    format: uri
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSchema'
+    get:
+      responses:
+        '200':
+          description: Successfully retrieved receipts
+          content:
+            application/json:
+              type: array
+              items:
+                $ref: '#/components/schemas/GetReceiptsResponseBodyItem'
+  /receipts/download-url:
+    get:
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved download URL for the receipt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  url:
+                    type: string
+                    format: uri
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSchema'
+components:
+  schemas:
+    PostReceiptsRequestBody:
+      type: object
+      properties:
+        storeName:
+          type: string
+        timestamp:
+          type: number
+        contentType:
+          type: string
+      required:
+        - storeName
+        - timestamp
+        - contentType
+    GetReceiptsResponseBodyItem:
+      type: object
+      properties:
+        id:
+          type: string
+        store:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+          required:
+            - id
+            - name
+        timestamp:
+          type: string
+          format: date-time
+        documentType:
+          type: string
+      required:
+        - id
+        - store
+        - timestamp
+        - documentType
+    ErrorSchema:
+      type: object
+      properties:
+        message:
+          type: string
+        details:
+          type: object
+        trackingId:
+          type: string

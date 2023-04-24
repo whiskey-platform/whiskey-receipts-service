@@ -2,8 +2,8 @@ import { Kysely } from 'kysely';
 import { PlanetScaleDialect } from 'kysely-planetscale';
 import { Config } from 'sst/node/config';
 import { fetch } from 'undici';
-import { StoreTable } from './model/store';
-import { ReceiptTable } from './model/receipt';
+import { Store as StoreTable } from './model/store';
+import { Receipt as ReceiptTable } from './model/receipt';
 
 interface Database {
   stores: StoreTable;
