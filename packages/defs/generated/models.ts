@@ -17,7 +17,7 @@ export interface GetReceiptsResponseBodyItem {
     id: number;
     name: string;
   };
-  timestamp: string;
+  timestamp: number;
   documentType: string;
 }
 export interface ErrorSchema {

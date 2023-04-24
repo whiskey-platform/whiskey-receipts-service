@@ -44,8 +44,7 @@
           ]
         },
         "timestamp": {
-          "type": "string",
-          "format": "date-time"
+          "type": "number"
         },
         "documentType": {
           "type": "string"

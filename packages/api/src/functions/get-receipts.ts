@@ -25,7 +25,7 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
       name: v.store_name ?? '',
     },
     documentType: v.document_type,
-    timestamp: v.timestamp.toISOString(),
+    timestamp: v.timestamp.getTime(),
   }));
   return {
     statusCode: 200,
