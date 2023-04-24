@@ -1,5 +1,7 @@
 import { SSTConfig } from 'sst';
 import { API } from './stacks/API';
+import { Infra } from './stacks/Infra';
+import { EventHandling } from './stacks/Events';
 
 export default {
   config(_input) {
@@ -18,6 +20,6 @@ export default {
       },
     });
 
-    app.stack(API);
+    app.stack(Infra).stack(API).stack(EventHandling);
   },
 } satisfies SSTConfig;
