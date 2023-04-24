@@ -40,7 +40,7 @@ export const handler: SNSHandler = async event => {
         id,
         store_id: storeID!,
         timestamp: new Date(input.timestamp),
-        documentType: input.documentType,
+        document_type: input.documentType,
       })
       .execute();
 
