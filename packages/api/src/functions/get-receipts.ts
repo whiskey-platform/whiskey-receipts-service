@@ -2,6 +2,8 @@ import middy from '@middy/core';
 import { db } from '@whiskey-receipts-service/core';
 import { GetReceiptsResponseBodyItem } from '@whiskey-receipts-service/defs';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
+import { DateTime } from 'luxon';
+import { groupBy } from 'lodash';
 import requestMonitoring from 'src/middleware/request-monitoring';
 import { validateAuth } from 'src/middleware/validate-auth';
 
@@ -18,19 +20,38 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
     ])
     .execute();
 
-  const returned: GetReceiptsResponseBodyItem[] = receipts.map(v => ({
-    id: v.id,
-    store: {
-      id: v.store_id ?? 0,
-      name: v.store_name ?? '',
-    },
-    documentType: v.document_type,
-    timestamp: v.timestamp.getTime(),
-  }));
-  return {
-    statusCode: 200,
-    body: JSON.stringify(returned),
-  };
+  if (event.queryStringParameters?.groupByDate) {
+    const combined: GetReceiptsResponseBodyItem[] = receipts.map(v => ({
+      id: v.id,
+      store: {
+        id: v.store_id ?? 0,
+        name: v.store_name ?? '',
+      },
+      documentType: v.document_type,
+      timestamp: v.timestamp.getTime(),
+    }));
+    const returned = groupBy(combined, v =>
+      DateTime.fromMillis(v.timestamp).toFormat('yyyy-MM-dd')
+    );
+    return {
+      statusCode: 200,
+      body: JSON.stringify(returned),
+    };
+  } else {
+    const returned: GetReceiptsResponseBodyItem[] = receipts.map(v => ({
+      id: v.id,
+      store: {
+        id: v.store_id ?? 0,
+        name: v.store_name ?? '',
+      },
+      documentType: v.document_type,
+      timestamp: v.timestamp.getTime(),
+    }));
+    return {
+      statusCode: 200,
+      body: JSON.stringify(returned),
+    };
+  }
 };
 
 export const handler = middy(getReceipts).use(requestMonitoring()).use(validateAuth());
