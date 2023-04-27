@@ -17,6 +17,7 @@
     "@middy/validator": "^4.2.8",
     "@whiskey-receipts-service/core": "link:../core",
     "json-schema-to-ts": "^2.7.2",
+    "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "ulid": "^2.3.0"
   }

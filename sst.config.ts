@@ -2,6 +2,7 @@ import { SSTConfig } from 'sst';
 import { API } from './stacks/API';
 import { Infra } from './stacks/Infra';
 import { EventHandling } from './stacks/Events';
+import { Housekeeping } from './stacks/Housekeeping';
 
 export default {
   config(_input) {
@@ -20,6 +21,6 @@ export default {
       },
     });
 
-    app.stack(Infra).stack(API).stack(EventHandling);
+    app.stack(Infra).stack(API).stack(EventHandling).stack(Housekeeping);
   },
 } satisfies SSTConfig;

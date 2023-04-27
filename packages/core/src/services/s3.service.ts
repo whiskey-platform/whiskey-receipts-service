@@ -1,11 +1,14 @@
 import {
   CopyObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { extension } from 'mime-types';
+import { chunk } from 'lodash';
 import { logger } from '../utils/logger';
 
 export class S3Service {
@@ -57,5 +60,41 @@ export class S3Service {
       Key,
     });
     await s3Client.send(copyRequest);
+  }
+
+  public async retrieveAllObjects(Bucket: string) {
+    const getRequest = new ListObjectsV2Command({
+      Bucket,
+    });
+    const response = await this.s3Client.send(getRequest);
+    let objects = response.Contents ?? [];
+    let ContinuationToken = response.NextContinuationToken;
+    while (ContinuationToken) {
+      const getRequest = new ListObjectsV2Command({
+        Bucket,
+      });
+      const response = await this.s3Client.send(getRequest);
+      if (response.Contents) {
+        objects?.push(...response.Contents!);
+      }
+      ContinuationToken = response.NextContinuationToken;
+    }
+
+    return objects;
+  }
+
+  public async deleteObjects(keys: string[], Bucket: string) {
+    const groupedKeys = chunk(keys, 1000);
+    for (const group of groupedKeys) {
+      const deleteRequest = new DeleteObjectsCommand({
+        Bucket,
+        Delete: {
+          Objects: group.map(Key => ({
+            Key,
+          })),
+        },
+      });
+      await this.s3Client.send(deleteRequest);
+    }
   }
 }
