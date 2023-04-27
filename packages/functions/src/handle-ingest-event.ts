@@ -5,6 +5,7 @@ import { Bucket } from 'sst/node/bucket';
 import { ulid } from 'ulid';
 import { extension } from 'mime-types';
 import { Config } from 'sst/node/config';
+import { Topic } from 'sst/node/topic';
 
 const s3 = S3Service.live();
 const sns = SNSService.live();
@@ -67,7 +68,7 @@ export const handler: SNSHandler = async event => {
             },
           },
         },
-        Config.NOTIFICATIONS_TOPIC_ARN
+        Topic.NotificationsTopic.topicArn
       );
     }
   }

@@ -1,5 +1,6 @@
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-import { Bucket, Config, StackContext } from 'sst/constructs';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import { Bucket, Config, StackContext, Topic } from 'sst/constructs';
 
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
@@ -13,17 +14,23 @@ export const Infra = ({ stack }: StackContext) => {
     value: `${apiBaseUrl}`,
   });
 
-  const NOTIFICATIONS_TOPIC_ARN = new Config.Parameter(stack, 'NOTIFICATIONS_TOPIC_ARN', {
-    value: StringParameter.valueFromLookup(
-      stack,
-      `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
-    ),
+  const notificationsTopic = new Topic(stack, 'NotificationsTopic', {
+    cdk: {
+      topic: sns.Topic.fromTopicArn(
+        stack,
+        'ExistingNotificationsTopic',
+        StringParameter.valueFromLookup(
+          stack,
+          `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
+        )
+      ),
+    },
   });
 
   return {
     bucket,
     DATABASE_URL,
     AUTH_BASE_URL,
-    NOTIFICATIONS_TOPIC_ARN,
+    notificationsTopic,
   };
 };
