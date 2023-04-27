@@ -14,16 +14,23 @@ export const Infra = ({ stack }: StackContext) => {
     value: `${apiBaseUrl}`,
   });
 
+  const arnLookup = StringParameter.valueFromLookup(
+    stack,
+    `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
+  );
+  let arnLookupValue: string;
+  if (arnLookup.includes('dummy-value')) {
+    arnLookupValue = stack.formatArn({
+      service: 'sns',
+      resource: 'topic',
+      resourceName: arnLookup,
+    });
+  } else {
+    arnLookupValue = arnLookup;
+  }
   const notificationsTopic = new Topic(stack, 'NotificationsTopic', {
     cdk: {
-      topic: sns.Topic.fromTopicArn(
-        stack,
-        'ExistingNotificationsTopic',
-        StringParameter.valueFromLookup(
-          stack,
-          `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
-        )
-      ),
+      topic: sns.Topic.fromTopicArn(stack, 'ExistingNotificationsTopic', arnLookupValue),
     },
   });
 
