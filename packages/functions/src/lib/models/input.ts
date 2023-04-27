@@ -3,4 +3,5 @@ export interface Input {
   timestamp: number;
   documentType: string;
   sourceDataPath: string;
+  fromAPI?: boolean;
 }

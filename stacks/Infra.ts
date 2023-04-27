@@ -13,9 +13,17 @@ export const Infra = ({ stack }: StackContext) => {
     value: `${apiBaseUrl}`,
   });
 
+  const NOTIFICATIONS_TOPIC_ARN = new Config.Parameter(stack, 'NOTIFICATIONS_TOPIC_ARN', {
+    value: StringParameter.valueFromLookup(
+      stack,
+      `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
+    ),
+  });
+
   return {
     bucket,
     DATABASE_URL,
     AUTH_BASE_URL,
+    NOTIFICATIONS_TOPIC_ARN,
   };
 };

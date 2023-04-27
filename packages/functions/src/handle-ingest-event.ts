@@ -1,11 +1,13 @@
 import { SNSHandler } from 'aws-lambda';
-import { S3Service, db, logger } from '@whiskey-receipts-service/core';
+import { S3Service, SNSService, db, logger } from '@whiskey-receipts-service/core';
 import { extractInput } from './lib/extraction';
 import { Bucket } from 'sst/node/bucket';
 import { ulid } from 'ulid';
 import { extension } from 'mime-types';
+import { Config } from 'sst/node/config';
 
 const s3 = S3Service.live();
+const sns = SNSService.live();
 
 export const handler: SNSHandler = async event => {
   for (const record of event.Records) {
@@ -47,5 +49,26 @@ export const handler: SNSHandler = async event => {
       .execute();
 
     logger.info('Successfully saved receipt to database');
+
+    if (!input.fromAPI) {
+      // send notification
+      await sns.publishEvent(
+        {
+          body: {
+            aps: {
+              alert: {
+                title: 'New Receipt Available',
+                body: `${input.store} - ${new Date(input.timestamp).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}`,
+              },
+            },
+          },
+        },
+        Config.NOTIFICATIONS_TOPIC_ARN
+      );
+    }
   }
 };
