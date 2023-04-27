@@ -15,7 +15,6 @@ export const EventHandling = ({ stack }: StackContext) => {
   });
 
   stack.addOutputs({
-    TopicArn: topic.topicArn,
     SubscriberFunctionArn: topic.subscriberFunctions[0].functionArn,
     SubscriberFunctionRoleArn: topic.subscriberFunctions[0].role?.roleArn ?? '',
   });
