@@ -12,5 +12,6 @@ export const Housekeeping = ({ stack }: StackContext) => {
   new Function(stack, 'MigrateOldReceipts', {
     handler: 'packages/functions/src/housekeeping/migrate-old-receipts.handler',
     bind: [bucket, DATABASE_URL],
+    permissions: ['s3', 'dynamodb'],
   });
 };
