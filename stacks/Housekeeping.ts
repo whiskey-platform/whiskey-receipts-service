@@ -1,4 +1,4 @@
-import { Cron, StackContext, use } from 'sst/constructs';
+import { Cron, Function, StackContext, use } from 'sst/constructs';
 import { Infra } from './Infra';
 
 export const Housekeeping = ({ stack }: StackContext) => {
@@ -8,4 +8,9 @@ export const Housekeeping = ({ stack }: StackContext) => {
     schedule: 'rate(7 days)',
   });
   cleanupReceiptDocuments.bind([bucket, DATABASE_URL]);
+
+  new Function(stack, 'MigrateOldReceipts', {
+    handler: 'packages/functions/src/housekeeping/migrate-old-receipts.handler',
+    bind: [bucket, DATABASE_URL],
+  });
 };
