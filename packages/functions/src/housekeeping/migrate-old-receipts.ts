@@ -37,44 +37,60 @@ export const handler: Handler = async event => {
 
   for (const oldReceipt of oldReceipts) {
     console.log('Evaluating ', oldReceipt.key);
-
-    // get store
-    const store = (
-      await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
-    )[0];
-    console.log(store);
-
-    let storeID = store?.id;
-
-    if (!store) {
-      await db.insertInto('stores').values({ name: oldReceipt.store }).execute();
-      const newStore = (
-        await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
-      )[0];
-      storeID = newStore.id;
-      console.log('new store');
-    }
-    console.log('storeID: ', storeID);
-
     const receiptTimestamp = DateTime.fromFormat(oldReceipt.dateString, 'yyyy-MM-dd').toMillis();
-    const id = ulid(receiptTimestamp);
 
-    await db
-      .replaceInto('receipts')
-      .values({
-        id,
-        store_id: storeID!,
-        timestamp: new Date(receiptTimestamp),
-        document_type: 'application/pdf',
-      })
+    const newReceipt = await db
+      .selectFrom('receipts')
+      .leftJoin('stores', 'stores.id', 'receipts.store_id')
+      .select([
+        'receipts.id as id',
+        'stores.id as store_id',
+        'stores.name as store_name',
+        'receipts.timestamp as timestamp',
+        'receipts.document_type as document_type',
+      ])
+      .where('stores.name', '=', oldReceipt.store)
+      .where('timestamp', '=', new Date(receiptTimestamp))
       .execute();
 
-    const objectKey = s3.objectKey(id, 'application/pdf');
+    if (!newReceipt[0]) {
+      // get store
+      const store = (
+        await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
+      )[0];
+      console.log(store);
 
-    await s3.copyObject(
-      encodeURIComponent(`${oldBucketName}/${oldReceipt.key}`),
-      Bucket.ReceiptsBucket.bucketName,
-      objectKey
-    );
+      let storeID = store?.id;
+
+      if (!store) {
+        await db.insertInto('stores').values({ name: oldReceipt.store }).execute();
+        const newStore = (
+          await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
+        )[0];
+        storeID = newStore.id;
+        console.log('new store');
+      }
+      console.log('storeID: ', storeID);
+
+      const id = ulid(receiptTimestamp);
+
+      await db
+        .replaceInto('receipts')
+        .values({
+          id,
+          store_id: storeID!,
+          timestamp: new Date(receiptTimestamp),
+          document_type: 'application/pdf',
+        })
+        .execute();
+
+      const objectKey = s3.objectKey(id, 'application/pdf');
+
+      await s3.copyObject(
+        encodeURIComponent(`${oldBucketName}/${oldReceipt.key}`),
+        Bucket.ReceiptsBucket.bucketName,
+        objectKey
+      );
+    }
   }
 };
