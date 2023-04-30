@@ -39,7 +39,7 @@ export const handler: Handler = async event => {
     console.log('Evaluating ', oldReceipt.key);
     const receiptTimestamp = DateTime.fromFormat(oldReceipt.dateString, 'yyyy-MM-dd').toMillis();
 
-    const newReceipt = await db
+    const receiptsFromStore = await db
       .selectFrom('receipts')
       .leftJoin('stores', 'stores.id', 'receipts.store_id')
       .select([
@@ -50,8 +50,11 @@ export const handler: Handler = async event => {
         'receipts.document_type as document_type',
       ])
       .where('stores.name', '=', oldReceipt.store)
-      .where('timestamp', '=', new Date(receiptTimestamp))
       .execute();
+
+    const newReceipt = receiptsFromStore.filter(
+      r => DateTime.fromJSDate(r.timestamp).toFormat('yyyy-MM-dd') === oldReceipt.dateString
+    );
 
     if (!newReceipt[0]) {
       // get store
