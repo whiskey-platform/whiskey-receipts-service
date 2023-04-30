@@ -72,7 +72,7 @@ export const handler: Handler = async event => {
     const objectKey = s3.objectKey(id, 'application/pdf');
 
     await s3.copyObject(
-      `${oldBucketName}/${oldReceipt.key}`,
+      encodeURIComponent(`${oldBucketName}/${oldReceipt.key}`),
       Bucket.ReceiptsBucket.bucketName,
       objectKey
     );
