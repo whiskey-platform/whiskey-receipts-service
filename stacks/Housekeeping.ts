@@ -1,5 +1,6 @@
 import { Cron, Function, StackContext, use } from 'sst/constructs';
 import { Infra } from './Infra';
+import { Tags } from 'aws-cdk-lib';
 
 export const Housekeeping = ({ stack }: StackContext) => {
   const { bucket, DATABASE_URL } = use(Infra);
@@ -14,4 +15,5 @@ export const Housekeeping = ({ stack }: StackContext) => {
     bind: [bucket, DATABASE_URL],
     permissions: ['s3', 'dynamodb'],
   });
+  stack.getAllFunctions().forEach(fn => Tags.of(fn).add('lumigo:auto-trace', 'true'));
 };
