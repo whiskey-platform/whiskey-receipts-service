@@ -66,6 +66,7 @@ export const handler: SNSHandler = async event => {
                 })}`,
               },
             },
+            channel: 'receipts',
           },
         },
         Topic.NotificationsTopic.topicArn
