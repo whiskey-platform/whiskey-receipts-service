@@ -19,5 +19,4 @@ export const EventHandling = ({ stack }: StackContext) => {
     SubscriberFunctionArn: topic.subscriberFunctions[0].functionArn,
     SubscriberFunctionRoleArn: topic.subscriberFunctions[0].role?.roleArn ?? '',
   });
-  stack.getAllFunctions().forEach(fn => Tags.of(fn).add('lumigo:auto-trace', 'true'));
 };

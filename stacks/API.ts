@@ -38,6 +38,4 @@ export function API({ stack, app }: StackContext) {
   });
 
   api.bind([DATABASE_URL, AUTH_BASE_URL, bucket]);
-
-  stack.getAllFunctions().forEach(fn => Tags.of(fn).add('lumigo:auto-trace', 'true'));
 }

@@ -20,5 +20,4 @@ export const Housekeeping = ({ stack }: StackContext) => {
     bind: [bucket, DATABASE_URL],
     permissions: ['s3', 'dynamodb'],
   });
-  stack.getAllFunctions().forEach(fn => Tags.of(fn).add('lumigo:auto-trace', 'true'));
 };
