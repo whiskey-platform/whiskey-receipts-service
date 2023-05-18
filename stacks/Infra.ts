@@ -1,6 +1,6 @@
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import { Bucket, Config, StackContext, Topic } from 'sst/constructs';
+import { Bucket, Config, Stack, StackContext, Topic } from 'sst/constructs';
 
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
@@ -14,10 +14,40 @@ export const Infra = ({ stack }: StackContext) => {
     value: `${apiBaseUrl}`,
   });
 
-  const arnLookup = StringParameter.valueFromLookup(
-    stack,
-    `/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`
-  );
+  const notificationsTopic = new Topic(stack, 'NotificationsTopic', {
+    cdk: {
+      topic: sns.Topic.fromTopicArn(
+        stack,
+        'ExistingNotificationsTopic',
+        ssmArn(`/sst/push-notifications/${stack.stage}/Topic/NotificationsTopic/topicArn`, stack)
+      ),
+    },
+  });
+
+  const documentIngestTopic = new Topic(stack, 'DocumentIngestTopic', {
+    cdk: {
+      topic: sns.Topic.fromTopicArn(
+        stack,
+        'ExistingDocumentIngestTopic',
+        ssmArn(
+          `/sst/whiskeyhub-document-service/${stack.stage}/Topic/DocumentIngestTopic/topicArn`,
+          stack
+        )
+      ),
+    },
+  });
+
+  return {
+    bucket,
+    DATABASE_URL,
+    AUTH_BASE_URL,
+    notificationsTopic,
+    documentIngestTopic,
+  };
+};
+
+function ssmArn(name: string, stack: Stack): string {
+  const arnLookup = StringParameter.valueFromLookup(stack, name);
   let arnLookupValue: string;
   if (arnLookup.includes('dummy-value')) {
     arnLookupValue = stack.formatArn({
@@ -28,16 +58,5 @@ export const Infra = ({ stack }: StackContext) => {
   } else {
     arnLookupValue = arnLookup;
   }
-  const notificationsTopic = new Topic(stack, 'NotificationsTopic', {
-    cdk: {
-      topic: sns.Topic.fromTopicArn(stack, 'ExistingNotificationsTopic', arnLookupValue),
-    },
-  });
-
-  return {
-    bucket,
-    DATABASE_URL,
-    AUTH_BASE_URL,
-    notificationsTopic,
-  };
-};
+  return arnLookupValue;
+}

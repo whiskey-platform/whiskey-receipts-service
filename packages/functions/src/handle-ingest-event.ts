@@ -6,6 +6,7 @@ import { ulid } from 'ulid';
 import { extension } from 'mime-types';
 import { Config } from 'sst/node/config';
 import { Topic } from 'sst/node/topic';
+import { DateTime } from 'luxon';
 
 const s3 = S3Service.live();
 const sns = SNSService.live();
@@ -50,6 +51,18 @@ export const handler: SNSHandler = async event => {
       .execute();
 
     logger.info('Successfully saved receipt to database');
+
+    const datetime = DateTime.fromMillis(input.timestamp);
+    await sns.publishEvent(
+      {
+        sourceBucket: Bucket.ReceiptsBucket.bucketName,
+        sourceKey: `${id}.${extension(input.documentType)}`,
+        destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat(
+          'yyyy-MM-dd hh:mm:ss'
+        )} - ${input.store}`,
+      },
+      Topic.DocumentIngestTopic.topicArn
+    );
 
     if (!input.fromAPI) {
       // send notification
