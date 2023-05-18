@@ -3,7 +3,7 @@ import { Infra } from './Infra';
 import { Tags } from 'aws-cdk-lib';
 
 export const Housekeeping = ({ stack }: StackContext) => {
-  const { bucket, DATABASE_URL } = use(Infra);
+  const { bucket, DATABASE_URL, documentIngestTopic } = use(Infra);
   const cleanupReceiptDocuments = new Cron(stack, 'CleanupReceiptDocuments', {
     job: {
       function: {
@@ -19,5 +19,10 @@ export const Housekeeping = ({ stack }: StackContext) => {
     handler: 'packages/functions/src/housekeeping/migrate-old-receipts.handler',
     bind: [bucket, DATABASE_URL],
     permissions: ['s3', 'dynamodb'],
+  });
+
+  new Function(stack, 'SendReceiptsToDocuments', {
+    handler: 'packages/functions/src/housekeeping/send-receipts-to-documents.handler',
+    bind: [bucket, DATABASE_URL, documentIngestTopic],
   });
 };

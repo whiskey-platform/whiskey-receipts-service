@@ -1,5 +1,11 @@
-import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/client-sns';
+import {
+  MessageAttributeValue,
+  PublishBatchCommand,
+  PublishCommand,
+  SNSClient,
+} from '@aws-sdk/client-sns';
 import { logger } from '../utils/logger';
+import { chunk } from 'lodash';
 
 const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 
@@ -24,5 +30,22 @@ export class SNSService {
     });
     await snsClient.send(snsReq);
     logger.info(`Successfully published event to SNS`);
+  }
+
+  public async batchEvents(
+    events: { id: string; payload: any }[],
+    TopicArn: string
+  ): Promise<void> {
+    for (const group of chunk(events, 10)) {
+      const snsReq = new PublishBatchCommand({
+        PublishBatchRequestEntries: group.map(val => ({
+          Id: val.id,
+          Message: JSON.stringify(val.payload),
+        })),
+        TopicArn,
+      });
+      await snsClient.send(snsReq);
+    }
+    logger.info(`Successfully published events to SNS`);
   }
 }

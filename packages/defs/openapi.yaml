@@ -44,6 +44,30 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/GetReceiptsResponseBodyItem'
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved receipts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: Success
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSchema'
   /receipts/download-url:
     get:
       parameters:
