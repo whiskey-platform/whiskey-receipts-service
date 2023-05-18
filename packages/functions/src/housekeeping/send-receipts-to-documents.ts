@@ -26,9 +26,9 @@ export const handler: Handler = async event => {
       payload: {
         sourceBucket: Bucket.ReceiptsBucket.bucketName,
         sourceKey: `${r.id}.${extension(r.document_type)}`,
-        destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat(
-          'yyyy-MM-dd'
-        )} ${datetime.toLocaleString(DateTime.TIME_SIMPLE)} - ${r.store_name}.pdf`,
+        destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat('yyyy-MM-dd')} - ${
+          r.store_name
+        } (${r.id}).pdf`,
       },
     };
   });
