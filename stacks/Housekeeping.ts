@@ -8,7 +8,7 @@ export const Housekeeping = ({ stack }: StackContext) => {
     job: {
       function: {
         handler: 'packages/functions/src/housekeeping/cleanup-receipt-documents.handler',
-        timeout: '5 minutes',
+        timeout: '10 minutes',
       },
     },
     schedule: 'rate(7 days)',
