@@ -58,8 +58,8 @@ export const handler: SNSHandler = async event => {
         sourceBucket: Bucket.ReceiptsBucket.bucketName,
         sourceKey: `${id}.${extension(input.documentType)}`,
         destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat(
-          'yyyy-MM-dd hh:mm:ss'
-        )} - ${input.store}.pdf`,
+          'yyyy-MM-dd'
+        )} ${datetime.toLocaleString(DateTime.TIME_SIMPLE)} - ${input.store} (${id}).pdf`,
       },
       Topic.DocumentIngestTopic.topicArn
     );
