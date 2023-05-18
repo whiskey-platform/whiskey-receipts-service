@@ -59,7 +59,7 @@ export const handler: SNSHandler = async event => {
         sourceKey: `${id}.${extension(input.documentType)}`,
         destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat(
           'yyyy-MM-dd hh:mm:ss'
-        )} - ${input.store}`,
+        )} - ${input.store}.pdf`,
       },
       Topic.DocumentIngestTopic.topicArn
     );
