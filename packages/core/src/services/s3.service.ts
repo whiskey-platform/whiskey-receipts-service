@@ -3,8 +3,10 @@ import {
   DeleteObjectsCommand,
   GetObjectCommand,
   ListObjectsV2Command,
+  ListObjectsV2CommandInput,
   PutObjectCommand,
   S3Client,
+  _Object,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { extension } from 'mime-types';
@@ -63,23 +65,18 @@ export class S3Service {
   }
 
   public async retrieveAllObjects(Bucket: string) {
-    const getRequest = new ListObjectsV2Command({
+    let ContinuationToken: string | undefined = undefined;
+    const objects: _Object[] = [];
+    const baseRequest: ListObjectsV2CommandInput = {
       Bucket,
-    });
-    const response = await this.s3Client.send(getRequest);
-    let objects = response.Contents ?? [];
-    let ContinuationToken = response.NextContinuationToken;
-    while (ContinuationToken) {
-      const getRequest = new ListObjectsV2Command({
-        Bucket,
-      });
+    };
+    do {
+      if (ContinuationToken !== undefined) baseRequest.ContinuationToken = ContinuationToken;
+      const getRequest = new ListObjectsV2Command(baseRequest);
       const response = await this.s3Client.send(getRequest);
-      if (response.Contents) {
-        objects?.push(...response.Contents!);
-      }
+      objects.push(...(response.Contents ?? []));
       ContinuationToken = response.NextContinuationToken;
-    }
-
+    } while (ContinuationToken !== undefined);
     return objects;
   }
 
