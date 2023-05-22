@@ -3,27 +3,28 @@ import { Handler } from 'aws-lambda';
 
 export const handler: Handler = async event => {
   logger.info('Retrieving all receipts');
-  const receipts = await db
-    .selectFrom('receipts')
-    .selectAll()
-    .orderBy('timestamp', 'asc')
-    .execute();
+  const receipts = await db.selectFrom('receipts').selectAll().execute();
 
   let dupes = [];
-  for (let i = 0; i < receipts.length - 1; i++) {
-    if (isFunctionalDuplicate(receipts[i + 1], receipts[i])) {
-      dupes.push(receipts[i]);
+  for (let i = 0; i < receipts.length; i++) {
+    for (let j = 0; j < receipts.length; j++) {
+      if (i !== j) {
+        if (isFunctionalDuplicate(receipts[i], receipts[j])) {
+          dupes.push(receipts[i]);
+        }
+      }
     }
   }
-  if (dupes.length !== 0) {
-    logger.info(`Found ${dupes.length} duplicates. Cleaning up now...`);
+  const dupesSet = new Set(dupes);
+  if (dupesSet.size !== 0) {
+    logger.info(`Found ${dupesSet.size} duplicates. Cleaning up now...`);
 
     await db
       .deleteFrom('receipts')
       .where(
         'id',
         'in',
-        dupes.map(v => v.id)
+        [...dupesSet].map(v => v.id)
       )
       .execute();
 
