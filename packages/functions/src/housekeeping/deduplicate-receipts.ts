@@ -15,18 +15,22 @@ export const handler: Handler = async event => {
       dupes.push(receipts[i]);
     }
   }
-  logger.info(`Found ${dupes.length} duplicates. Cleaning up now...`);
+  if (dupes.length !== 0) {
+    logger.info(`Found ${dupes.length} duplicates. Cleaning up now...`);
 
-  await db
-    .deleteFrom('receipts')
-    .where(
-      'id',
-      'in',
-      dupes.map(v => v.id)
-    )
-    .execute();
+    await db
+      .deleteFrom('receipts')
+      .where(
+        'id',
+        'in',
+        dupes.map(v => v.id)
+      )
+      .execute();
 
-  logger.info('Deleted duplicate receipts');
+    logger.info('Deleted duplicate receipts');
+  } else {
+    logger.info('No duplicates found!');
+  }
 };
 
 function isFunctionalDuplicate(
