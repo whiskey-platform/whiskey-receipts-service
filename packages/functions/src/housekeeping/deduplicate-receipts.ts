@@ -4,7 +4,7 @@ import { Handler } from 'aws-lambda';
 export const handler: Handler = async event => {
   logger.info('Retrieving all receipts');
   const receipts = await db.selectFrom('receipts').selectAll().execute();
-
+  logger.info('Receipts', { count: receipts.length });
   let dupes = [];
   for (let i = 0; i < receipts.length; i++) {
     for (let j = 0; j < receipts.length; j++) {
@@ -48,5 +48,5 @@ function isFunctionalDuplicate(
     document_type: string;
   }
 ) {
-  return rhs.store_id === lhs.store_id && rhs.timestamp === lhs.timestamp;
+  return rhs.store_id === lhs.store_id && rhs.timestamp.getTime() === lhs.timestamp.getTime();
 }
