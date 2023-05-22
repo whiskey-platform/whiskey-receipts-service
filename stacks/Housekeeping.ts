@@ -25,4 +25,9 @@ export const Housekeeping = ({ stack }: StackContext) => {
     handler: 'packages/functions/src/housekeeping/send-receipts-to-documents.handler',
     bind: [bucket, DATABASE_URL, documentIngestTopic],
   });
+
+  new Function(stack, 'DeduplicateReceipts', {
+    handler: 'packages/functions/src/housekeeping/deduplicate-receipts.handler',
+    bind: [DATABASE_URL],
+  });
 };
