@@ -13,6 +13,7 @@ export const validateAuth = (): middy.MiddlewareObj<APIGatewayProxyEventV2> => {
           Authorization: request.event.headers.authorization,
           'x-whiskey-client-id': request.event.headers['x-whiskey-client-id'] ?? '',
           'x-whiskey-client-secret': request.event.headers['x-whiskey-client-secret'] ?? '',
+          'x-amzn-trace-id': request.event.headers['x-amzn-trace-id'],
         });
 
         request.event.headers = {
