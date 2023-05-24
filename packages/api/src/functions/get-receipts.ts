@@ -4,6 +4,7 @@ import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { groupBy } from 'lodash';
 import { validateAuth } from 'src/middleware/validate-auth';
+import responseMonitoring from 'src/middleware/response-monitoring';
 
 const getReceipts: APIGatewayProxyHandlerV2 = async event => {
   const receipts = await db
@@ -52,4 +53,6 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
   }
 };
 
-export const handler = wrapped(getReceipts, { captureResponse: false }).use(validateAuth());
+export const handler = wrapped(getReceipts, { captureResponse: false })
+  .use(validateAuth())
+  .use(responseMonitoring());

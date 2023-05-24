@@ -1,5 +1,6 @@
 import { S3Service, wrapped } from '@whiskey-receipts-service/core';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
+import responseMonitoring from 'src/middleware/response-monitoring';
 import { validateAuth } from 'src/middleware/validate-auth';
 import { validateQuery } from 'src/middleware/validate-query';
 import { Bucket } from 'sst/node/bucket';
@@ -35,4 +36,5 @@ export const handler = wrapped(getDownloadURL)
       additionalProperties: false,
       required: ['id'],
     })
-  );
+  )
+  .use(responseMonitoring());

@@ -9,6 +9,7 @@ import { Bucket } from 'sst/node/bucket';
 import jsonBodyParser from '@middy/http-json-body-parser';
 import { validateAuth } from 'src/middleware/validate-auth';
 import { validateBody } from 'src/middleware/validate-body';
+import responseMonitoring from 'src/middleware/response-monitoring';
 
 const s3 = S3Service.live();
 
@@ -60,4 +61,5 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
 export const handler = wrapped(upload)
   .use(jsonBodyParser())
   .use(validateAuth())
-  .use(validateBody(PostReceiptsRequestBodyDecoder));
+  .use(validateBody(PostReceiptsRequestBodyDecoder))
+  .use(responseMonitoring());
