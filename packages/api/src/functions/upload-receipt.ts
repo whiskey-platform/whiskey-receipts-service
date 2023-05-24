@@ -4,10 +4,8 @@ import {
   PostReceiptsRequestBody,
   PostReceiptsRequestBodyDecoder,
 } from '@whiskey-receipts-service/defs';
-import { S3Service, db } from '@whiskey-receipts-service/core';
+import { S3Service, db, wrapped } from '@whiskey-receipts-service/core';
 import { Bucket } from 'sst/node/bucket';
-import middy from '@middy/core';
-import requestMonitoring from 'src/middleware/request-monitoring';
 import jsonBodyParser from '@middy/http-json-body-parser';
 import { validateAuth } from 'src/middleware/validate-auth';
 import { validateBody } from 'src/middleware/validate-body';
@@ -59,8 +57,7 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
   };
 };
 
-export const handler = middy(upload)
-  .use(requestMonitoring())
+export const handler = wrapped(upload)
   .use(jsonBodyParser())
   .use(validateAuth())
   .use(validateBody(PostReceiptsRequestBodyDecoder));

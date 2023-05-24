@@ -1,17 +1,16 @@
 import { SNSHandler } from 'aws-lambda';
-import { S3Service, SNSService, db, logger } from '@whiskey-receipts-service/core';
+import { S3Service, SNSService, db, logger, wrapped } from '@whiskey-receipts-service/core';
 import { extractInput } from './lib/extraction';
 import { Bucket } from 'sst/node/bucket';
 import { ulid } from 'ulid';
 import { extension } from 'mime-types';
-import { Config } from 'sst/node/config';
 import { Topic } from 'sst/node/topic';
 import { DateTime } from 'luxon';
 
 const s3 = S3Service.live();
 const sns = SNSService.live();
 
-export const handler: SNSHandler = async event => {
+const handleIngestEvent: SNSHandler = async event => {
   for (const record of event.Records) {
     logger.info('Handling SNS event record', { record });
     const input = extractInput(record.Sns);
@@ -87,3 +86,5 @@ export const handler: SNSHandler = async event => {
     }
   }
 };
+
+export const handler = wrapped(handleIngestEvent);

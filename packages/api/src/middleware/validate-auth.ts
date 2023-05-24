@@ -1,4 +1,4 @@
-import middy, { MiddlewareObj, Request } from '@middy/core';
+import middy, { Request } from '@middy/core';
 import { AuthService, logger } from '@whiskey-receipts-service/core';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 

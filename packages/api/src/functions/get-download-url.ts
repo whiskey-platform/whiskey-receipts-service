@@ -1,7 +1,5 @@
-import middy from '@middy/core';
-import { S3Service } from '@whiskey-receipts-service/core';
+import { S3Service, wrapped } from '@whiskey-receipts-service/core';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import requestMonitoring from 'src/middleware/request-monitoring';
 import { validateAuth } from 'src/middleware/validate-auth';
 import { validateQuery } from 'src/middleware/validate-query';
 import { Bucket } from 'sst/node/bucket';
@@ -26,8 +24,7 @@ const getDownloadURL: APIGatewayProxyHandlerV2 = async event => {
   };
 };
 
-export const handler = middy(getDownloadURL)
-  .use(requestMonitoring())
+export const handler = wrapped(getDownloadURL)
   .use(validateAuth())
   .use(
     validateQuery<QueryParameters>({

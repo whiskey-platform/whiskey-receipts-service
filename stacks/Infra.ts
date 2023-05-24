@@ -1,6 +1,7 @@
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Bucket, Config, Stack, StackContext, Topic } from 'sst/constructs';
+import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
@@ -37,12 +38,19 @@ export const Infra = ({ stack }: StackContext) => {
     },
   });
 
+  const powertools = LayerVersion.fromLayerVersionArn(
+    stack,
+    'PowertoolsLayer',
+    `arn:aws:lambda:${stack.region}:094274105915:layer:AWSLambdaPowertoolsTypeScript:11`
+  );
+
   return {
     bucket,
     DATABASE_URL,
     AUTH_BASE_URL,
     notificationsTopic,
     documentIngestTopic,
+    powertools,
   };
 };
 

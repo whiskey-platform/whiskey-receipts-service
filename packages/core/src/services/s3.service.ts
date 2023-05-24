@@ -12,6 +12,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { extension } from 'mime-types';
 import { chunk } from 'lodash';
 import { logger } from '../utils/logger';
+import { tracer } from '../utils/tracer';
 
 export class S3Service {
   objectKey = (id: string, contentType: string): string => `${id}.${extension(contentType)}`;
@@ -21,6 +22,7 @@ export class S3Service {
 
   constructor(s3Client: S3Client, getSignedUrlFunc: typeof getSignedUrl) {
     this.s3Client = s3Client;
+    tracer.captureAWSv3Client(this.s3Client);
     this.getSignedUrlFunc = getSignedUrlFunc;
   }
   public static live = (): S3Service =>

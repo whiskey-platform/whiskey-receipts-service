@@ -1,4 +1,4 @@
-import { SNSService, db } from '@whiskey-receipts-service/core';
+import { SNSService, db, wrapped } from '@whiskey-receipts-service/core';
 import { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { extension } from 'mime-types';
@@ -7,7 +7,7 @@ import { Topic } from 'sst/node/topic';
 
 const sns = SNSService.live();
 
-export const handler: Handler = async event => {
+const sendReceiptsToDocuments: Handler = async event => {
   const receipts = await db
     .selectFrom('receipts')
     .leftJoin('stores', 'stores.id', 'receipts.store_id')
@@ -35,3 +35,5 @@ export const handler: Handler = async event => {
 
   await sns.batchEvents(events, Topic.DocumentIngestTopic.topicArn);
 };
+
+export const handler = wrapped(sendReceiptsToDocuments);

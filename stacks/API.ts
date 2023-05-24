@@ -2,10 +2,9 @@ import { StackContext, Api, use, ApiDomainProps } from 'sst/constructs';
 import { DomainName } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Infra } from './Infra';
-import { Tags } from 'aws-cdk-lib';
 
 export function API({ stack, app }: StackContext) {
-  const { DATABASE_URL, bucket, AUTH_BASE_URL } = use(Infra);
+  const { DATABASE_URL, bucket, AUTH_BASE_URL, powertools } = use(Infra);
   let customDomain: ApiDomainProps | undefined;
   if (!app.local && app.stage !== 'local') {
     customDomain = {
@@ -35,6 +34,11 @@ export function API({ stack, app }: StackContext) {
       'GET /receipts/download-url': 'packages/api/src/functions/get-download-url.handler',
     },
     customDomain,
+    defaults: {
+      function: {
+        layers: [powertools],
+      },
+    },
   });
 
   api.bind([DATABASE_URL, AUTH_BASE_URL, bucket]);

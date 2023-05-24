@@ -6,14 +6,13 @@ import {
 } from '@aws-sdk/client-sns';
 import { logger } from '../utils/logger';
 import { chunk } from 'lodash';
-
-const snsClient = new SNSClient({ region: process.env.AWS_REGION });
-
+import { tracer } from '../utils/tracer';
 export class SNSService {
   private snsClient: SNSClient;
 
   constructor(snsClient: SNSClient) {
     this.snsClient = snsClient;
+    tracer.captureAWSv3Client(this.snsClient);
   }
   public static live = () => new SNSService(new SNSClient({ region: process.env.AWS_REGION }));
 
@@ -28,7 +27,7 @@ export class SNSService {
       TopicArn: topicArn,
       MessageAttributes: attributes,
     });
-    await snsClient.send(snsReq);
+    await this.snsClient.send(snsReq);
     logger.info(`Successfully published event to SNS`);
   }
 
@@ -44,7 +43,7 @@ export class SNSService {
         })),
         TopicArn,
       });
-      await snsClient.send(snsReq);
+      await this.snsClient.send(snsReq);
     }
     logger.info(`Successfully published events to SNS`);
   }

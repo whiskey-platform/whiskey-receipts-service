@@ -1,4 +1,4 @@
-import { S3Service, db } from '@whiskey-receipts-service/core';
+import { S3Service, db, wrapped } from '@whiskey-receipts-service/core';
 import { Handler } from 'aws-lambda';
 import { difference } from 'lodash';
 import { extension } from 'mime-types';
@@ -6,7 +6,7 @@ import { Bucket } from 'sst/node/bucket';
 
 const s3 = S3Service.live();
 
-export const handler: Handler = async event => {
+const cleanupReceiptDocuments: Handler = async event => {
   // retrieve all receipt ids and mimetypes
   const receipts = await db.selectFrom('receipts').select(['id', 'document_type']).execute();
   // retrieve all S3 documents
@@ -19,3 +19,5 @@ export const handler: Handler = async event => {
 
   await s3.deleteObjects(deleted, Bucket.ReceiptsBucket.bucketName);
 };
+
+export const handler = wrapped(cleanupReceiptDocuments);

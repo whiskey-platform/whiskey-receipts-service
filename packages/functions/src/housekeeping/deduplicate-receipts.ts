@@ -1,7 +1,7 @@
-import { db, logger } from '@whiskey-receipts-service/core';
+import { db, logger, wrapped } from '@whiskey-receipts-service/core';
 import { Handler } from 'aws-lambda';
 
-export const handler: Handler = async event => {
+const deduplicateReceipts: Handler = async event => {
   logger.info('Retrieving all receipts');
   const receipts = await db.selectFrom('receipts').selectAll().execute();
   logger.info('Receipts', { count: receipts.length });
@@ -33,6 +33,8 @@ export const handler: Handler = async event => {
     logger.info('No duplicates found!');
   }
 };
+
+export const handler = wrapped(deduplicateReceipts);
 
 function isFunctionalDuplicate(
   rhs: {

@@ -8,3 +8,4 @@ export * from './src/services/sns.service';
 
 // utils
 export * from './src/utils/logger';
+export * from './src/lambda-utils/middy';

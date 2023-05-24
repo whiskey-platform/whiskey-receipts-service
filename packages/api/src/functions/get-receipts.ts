@@ -1,10 +1,8 @@
-import middy from '@middy/core';
-import { db } from '@whiskey-receipts-service/core';
+import { db, wrapped } from '@whiskey-receipts-service/core';
 import { GetReceiptsResponseBodyItem } from '@whiskey-receipts-service/defs';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { groupBy } from 'lodash';
-import requestMonitoring from 'src/middleware/request-monitoring';
 import { validateAuth } from 'src/middleware/validate-auth';
 
 const getReceipts: APIGatewayProxyHandlerV2 = async event => {
@@ -54,4 +52,4 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
   }
 };
 
-export const handler = middy(getReceipts).use(requestMonitoring()).use(validateAuth());
+export const handler = wrapped(getReceipts).use(validateAuth());

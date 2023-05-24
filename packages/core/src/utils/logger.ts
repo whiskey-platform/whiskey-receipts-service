@@ -1,10 +1,3 @@
-import winston from 'winston';
+import { Logger } from '@aws-lambda-powertools/logger';
 
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.json({ space: process.env.IS_LOCAL ? 2 : 0 }),
-    winston.format.timestamp()
-  ),
-  transports: [new winston.transports.Console()],
-});
+export const logger = new Logger();

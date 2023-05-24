@@ -1,7 +1,7 @@
 import { Handler } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
-import { S3Service, db } from '@whiskey-receipts-service/core';
+import { S3Service, db, wrapped } from '@whiskey-receipts-service/core';
 import { ulid } from 'ulid';
 import { DateTime } from 'luxon';
 import { Bucket } from 'sst/node/bucket';
@@ -14,7 +14,7 @@ const oldBucketName = 'mattwyskiel-receipts-dev';
 
 const s3 = S3Service.live();
 
-export const handler: Handler = async event => {
+const migrateOldReceipts: Handler = async event => {
   console.log('Starting');
 
   let oldReceipts: any[] = [];
@@ -97,3 +97,5 @@ export const handler: Handler = async event => {
     }
   }
 };
+
+export const handler = wrapped(migrateOldReceipts);
