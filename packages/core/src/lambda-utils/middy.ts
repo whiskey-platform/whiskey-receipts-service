@@ -7,7 +7,11 @@ import { tracer } from '../utils/tracer';
 
 const isLocal = !!process.env.IS_LOCAL;
 
-export const wrapped = (handler: Handler) =>
+interface WrapOptions {
+  captureResponse?: boolean;
+}
+
+export const wrapped = (handler: Handler, options?: WrapOptions) =>
   middy(handler)
     .use(injectLambdaContext(logger, { logEvent: !isLocal }))
-    .use(captureLambdaHandler(tracer));
+    .use(captureLambdaHandler(tracer, { captureResponse: options?.captureResponse }));

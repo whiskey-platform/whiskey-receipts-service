@@ -52,4 +52,4 @@ const getReceipts: APIGatewayProxyHandlerV2 = async event => {
   }
 };
 
-export const handler = wrapped(getReceipts).use(validateAuth());
+export const handler = wrapped(getReceipts, { captureResponse: false }).use(validateAuth());
