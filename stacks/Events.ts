@@ -1,6 +1,5 @@
 import { StackContext, Topic, use } from 'sst/constructs';
 import { Infra } from './Infra';
-import { Tags } from 'aws-cdk-lib';
 
 export const EventHandling = ({ stack }: StackContext) => {
   const { DATABASE_URL, bucket, notificationsTopic, documentIngestTopic, powertools } = use(Infra);
@@ -12,6 +11,7 @@ export const EventHandling = ({ stack }: StackContext) => {
       function: {
         bind: [DATABASE_URL, bucket, notificationsTopic, documentIngestTopic],
         layers: [powertools],
+        permissions: ['s3'],
       },
     },
   });
