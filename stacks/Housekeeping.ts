@@ -15,7 +15,7 @@ export const Housekeeping = ({ stack }: StackContext) => {
     },
     schedule: 'rate(7 days)',
   });
-  cleanupReceiptDocuments.bind([bucket, DATABASE_URL]);
+  cleanupReceiptDocuments.bind([bucket, DATABASE_URL, eventsTopic]);
 
   new Function(stack, 'MigrateOldReceipts', {
     handler: 'packages/functions/src/housekeeping/migrate-old-receipts.handler',
