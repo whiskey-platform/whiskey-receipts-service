@@ -32,11 +32,6 @@ export const EventHandling = ({ stack }: StackContext) => {
     },
   });
 
-  stack.addOutputs({
-    SubscriberFunctionArn: topic.subscriberFunctions[0].functionArn,
-    SubscriberFunctionRoleArn: topic.subscriberFunctions[0].role?.roleArn ?? '',
-  });
-
   return {
     eventsTopic,
   };
