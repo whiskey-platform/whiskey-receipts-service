@@ -25,19 +25,6 @@ export const Infra = ({ stack }: StackContext) => {
     },
   });
 
-  const documentIngestTopic = new Topic(stack, 'DocumentIngestTopic', {
-    cdk: {
-      topic: sns.Topic.fromTopicArn(
-        stack,
-        'ExistingDocumentIngestTopic',
-        ssmArn(
-          `/sst/whiskeyhub-document-service/${stack.stage}/Topic/DocumentIngestTopic/topicArn`,
-          stack
-        )
-      ),
-    },
-  });
-
   const powertools = LayerVersion.fromLayerVersionArn(
     stack,
     'PowertoolsLayer',
@@ -49,7 +36,6 @@ export const Infra = ({ stack }: StackContext) => {
     DATABASE_URL,
     AUTH_BASE_URL,
     notificationsTopic,
-    documentIngestTopic,
     powertools,
   };
 };

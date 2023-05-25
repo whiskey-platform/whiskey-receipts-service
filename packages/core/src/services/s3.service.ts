@@ -2,6 +2,7 @@ import {
   CopyObjectCommand,
   DeleteObjectsCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   ListObjectsV2Command,
   ListObjectsV2CommandInput,
   PutObjectCommand,
@@ -95,5 +96,13 @@ export class S3Service {
       });
       await this.s3Client.send(deleteRequest);
     }
+  }
+
+  public async objectHead(Key: string, Bucket: string) {
+    const request = new HeadObjectCommand({
+      Bucket,
+      Key,
+    });
+    return await this.s3Client.send(request);
   }
 }

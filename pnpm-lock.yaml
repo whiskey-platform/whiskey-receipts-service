@@ -84,12 +84,18 @@ importers:
       '@aws-lambda-powertools/tracer':
         specifier: ^1.8.0
         version: 1.8.0
+      '@aws-sdk/client-dynamodb':
+        specifier: ^3.321.1
+        version: 3.321.1
       '@aws-sdk/client-s3':
         specifier: ^3.309.0
         version: 3.309.0(@aws-sdk/signature-v4-crt@3.306.0)
       '@aws-sdk/client-sns':
         specifier: ^3.321.1
         version: 3.321.1
+      '@aws-sdk/lib-dynamodb':
+        specifier: ^3.321.1
+        version: 3.321.1(@aws-sdk/client-dynamodb@3.321.1)(@aws-sdk/smithy-client@3.338.0)(@aws-sdk/types@3.338.0)
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.309.0
         version: 3.309.0
@@ -152,6 +158,9 @@ importers:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.321.1
         version: 3.321.1
+      '@aws-sdk/client-s3':
+        specifier: ^3.309.0
+        version: 3.309.0(@aws-sdk/signature-v4-crt@3.306.0)
       '@aws-sdk/lib-dynamodb':
         specifier: ^3.321.1
         version: 3.321.1(@aws-sdk/client-dynamodb@3.321.1)(@aws-sdk/smithy-client@3.338.0)(@aws-sdk/types@3.338.0)
@@ -324,14 +333,14 @@ packages:
     resolution: {integrity: sha512-IzSgsrxUcsrejQbPVilIKy16kAT52EwB6zSaI+M3xxIhKh5+aldEyvI+z6erM7TCLB2BJsFrtHjp6/4/sr+3dA==}
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       tslib: 1.14.1
 
   /@aws-crypto/crc32c@3.0.0:
     resolution: {integrity: sha512-ENNPPManmnVJ4BTXlOjAgD7URidbAznURqD0KvfREyc4o20DPYdEldU1f5cQ7Jbj0CJJSPaMIk/9ZshdB3210w==}
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       tslib: 1.14.1
 
   /@aws-crypto/ie11-detection@3.0.0:
@@ -345,7 +354,7 @@ packages:
       '@aws-crypto/ie11-detection': 3.0.0
       '@aws-crypto/supports-web-crypto': 3.0.0
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       '@aws-sdk/util-locate-window': 3.295.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
@@ -357,7 +366,7 @@ packages:
       '@aws-crypto/sha256-js': 3.0.0
       '@aws-crypto/supports-web-crypto': 3.0.0
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       '@aws-sdk/util-locate-window': 3.295.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
@@ -366,7 +375,7 @@ packages:
     resolution: {integrity: sha512-PnNN7os0+yd1XvXAy23CFOmTbMaDxgxXtTKHybrJ39Y8kGzBATgBFibWJKH6BhytLI/Zyszs87xCOBNyBig6vQ==}
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       tslib: 1.14.1
 
   /@aws-crypto/supports-web-crypto@3.0.0:
@@ -377,7 +386,7 @@ packages:
   /@aws-crypto/util@3.0.0:
     resolution: {integrity: sha512-2OJlpeJpCR48CC8r+uKVChzs9Iungj9wkZrl8Z041DWEWvyIHILYKCPNzJghKsivj+S3mLo6BVc7mBNzdxA46w==}
     dependencies:
-      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/types': 3.338.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
 

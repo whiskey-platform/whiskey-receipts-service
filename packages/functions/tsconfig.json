@@ -1,10 +1,6 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "baseUrl": ".",
-    "paths": {
-      "@whiskey-receipts-service/core/*": ["../core/src/*"]
-    }
+    "module": "esnext"
   }
 }

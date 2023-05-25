@@ -1,4 +1,4 @@
-import { SNSService, db, wrapped } from '@whiskey-receipts-service/core';
+import { SNSService, db, wrapped, Event } from '@whiskey-receipts-service/core';
 import { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { extension } from 'mime-types';
@@ -19,21 +19,25 @@ const sendReceiptsToDocuments: Handler = async event => {
     ])
     .execute();
 
-  const events = receipts.map(r => {
+  const events: { id: string; payload: Event }[] = receipts.map(r => {
     const datetime = DateTime.fromJSDate(r.timestamp);
     return {
       id: r.id,
       payload: {
-        sourceBucket: Bucket.ReceiptsBucket.bucketName,
-        sourceKey: `${r.id}.${extension(r.document_type)}`,
-        destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat('yyyy-MM-dd')} - ${
-          r.store_name
-        } (${r.id}).pdf`,
+        action: 'ADD',
+        details: {
+          id: r.id,
+          timestamp: datetime.toMillis(),
+          store: r.store_name!,
+          documentType: r.document_type,
+          sourceBucket: Bucket.ReceiptsBucket.bucketName,
+          sourceKey: `${r.id}.${extension(r.document_type)}`,
+        },
       },
     };
   });
 
-  await sns.batchEvents(events, Topic.DocumentIngestTopic.topicArn);
+  await sns.batchEvents(events, Topic.EventsTopic.topicArn);
 };
 
 export const handler = wrapped(sendReceiptsToDocuments);

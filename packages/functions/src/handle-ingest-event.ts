@@ -51,16 +51,19 @@ const handleIngestEvent: SNSHandler = async event => {
 
     logger.info('Successfully saved receipt to database');
 
-    const datetime = DateTime.fromMillis(input.timestamp);
     await sns.publishEvent(
       {
-        sourceBucket: Bucket.ReceiptsBucket.bucketName,
-        sourceKey: `${id}.${extension(input.documentType)}`,
-        destinationKey: `Finances/Receipts/${datetime.year}/${datetime.toFormat('yyyy-MM-dd')} - ${
-          input.store
-        } (${id}).pdf`,
+        action: 'ADD',
+        details: {
+          id,
+          timestamp: input.timestamp,
+          store: store.name,
+          documentType: input.documentType,
+          sourceBucket: Bucket.ReceiptsBucket.bucketName,
+          sourceKey: `${id}.${extension(input.documentType)}`,
+        },
       },
-      Topic.DocumentIngestTopic.topicArn
+      Topic.EventsTopic.topicArn
     );
 
     if (!input.fromAPI) {

@@ -1,8 +1,10 @@
 import { Cron, Function, StackContext, use } from 'sst/constructs';
 import { Infra } from './Infra';
+import { EventHandling } from './Events';
 
 export const Housekeeping = ({ stack }: StackContext) => {
-  const { bucket, DATABASE_URL, documentIngestTopic, powertools } = use(Infra);
+  const { bucket, DATABASE_URL, powertools } = use(Infra);
+  const { eventsTopic } = use(EventHandling);
   const cleanupReceiptDocuments = new Cron(stack, 'CleanupReceiptDocuments', {
     job: {
       function: {
@@ -22,15 +24,15 @@ export const Housekeeping = ({ stack }: StackContext) => {
     layers: [powertools],
   });
 
-  new Function(stack, 'SendReceiptsToDocuments', {
+  new Function(stack, 'RefreshReceipts', {
     handler: 'packages/functions/src/housekeeping/send-receipts-to-documents.handler',
-    bind: [bucket, DATABASE_URL, documentIngestTopic],
+    bind: [bucket, DATABASE_URL, eventsTopic],
     layers: [powertools],
   });
 
   new Function(stack, 'DeduplicateReceipts', {
     handler: 'packages/functions/src/housekeeping/deduplicate-receipts.handler',
-    bind: [DATABASE_URL],
+    bind: [DATABASE_URL, eventsTopic],
     layers: [powertools],
   });
 };

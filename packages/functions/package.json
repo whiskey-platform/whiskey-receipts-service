@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.321.1",
+    "@aws-sdk/client-s3": "^3.309.0",
     "@aws-sdk/lib-dynamodb": "^3.321.1",
     "@middy/core": "^4.2.8",
     "@middy/validator": "^4.2.8",

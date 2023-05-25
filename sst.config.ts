@@ -24,6 +24,6 @@ export default {
       },
     });
 
-    app.stack(Infra).stack(API).stack(EventHandling).stack(Housekeeping);
+    app.stack(Infra).stack(EventHandling).stack(API).stack(Housekeeping);
   },
 } satisfies SSTConfig;

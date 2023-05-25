@@ -1,9 +1,23 @@
-import { db, logger, wrapped } from '@whiskey-receipts-service/core';
+import { db, logger, wrapped, Event, SNSService } from '@whiskey-receipts-service/core';
 import { Handler } from 'aws-lambda';
+import { Topic } from 'sst/node/topic';
+
+const sns = SNSService.live();
 
 const deduplicateReceipts: Handler = async event => {
   logger.info('Retrieving all receipts');
-  const receipts = await db.selectFrom('receipts').selectAll().execute();
+  const receipts = await db
+    .selectFrom('receipts')
+    .leftJoin('stores', 'stores.id', 'receipts.store_id')
+    .select([
+      'receipts.id as id',
+      'stores.id as store_id',
+      'stores.name as store_name',
+      'receipts.timestamp as timestamp',
+      'receipts.document_type as document_type',
+    ])
+    .selectAll()
+    .execute();
   logger.info('Receipts', { count: receipts.length });
   let dupes = [];
   for (let i = 0; i < receipts.length; i++) {
@@ -29,6 +43,21 @@ const deduplicateReceipts: Handler = async event => {
       .execute();
 
     logger.info('Deleted duplicate receipts');
+
+    const deletedEvents: { id: string; payload: Event }[] = [...dupesSet].map(v => ({
+      id: v.id,
+      payload: {
+        action: 'DELETE',
+        details: {
+          id: v.id,
+          documentType: v.document_type,
+          store: v.store_name!,
+          timestamp: v.timestamp.getTime(),
+        },
+      },
+    }));
+    await sns.batchEvents(deletedEvents, Topic.EventsTopic.topicArn);
+    logger.info(`Notified topic of ${deletedEvents.length} DELETE events`);
   } else {
     logger.info('No duplicates found!');
   }
