@@ -8,4 +8,5 @@ export interface Event {
     sourceBucket?: string;
     sourceKey?: string;
   };
+  replay?: boolean;
 }

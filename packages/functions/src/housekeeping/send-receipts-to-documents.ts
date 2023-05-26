@@ -33,6 +33,7 @@ const sendReceiptsToDocuments: Handler = async event => {
           sourceBucket: Bucket.ReceiptsBucket.bucketName,
           sourceKey: `${r.id}.${extension(r.document_type)}`,
         },
+        replay: true,
       },
     };
   });
