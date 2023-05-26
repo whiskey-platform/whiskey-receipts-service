@@ -16,7 +16,6 @@ const deduplicateReceipts: Handler = async event => {
       'receipts.timestamp as timestamp',
       'receipts.document_type as document_type',
     ])
-    .selectAll()
     .execute();
   logger.info('Receipts', { count: receipts.length });
   let dupes = [];
@@ -65,19 +64,6 @@ const deduplicateReceipts: Handler = async event => {
 
 export const handler = wrapped(deduplicateReceipts);
 
-function isFunctionalDuplicate(
-  rhs: {
-    id: string;
-    store_id: number;
-    timestamp: Date;
-    document_type: string;
-  },
-  lhs: {
-    id: string;
-    store_id: number;
-    timestamp: Date;
-    document_type: string;
-  }
-) {
+function isFunctionalDuplicate(rhs: any, lhs: any) {
   return rhs.store_id === lhs.store_id && rhs.timestamp.getTime() === lhs.timestamp.getTime();
 }
