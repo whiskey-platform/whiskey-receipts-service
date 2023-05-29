@@ -6,7 +6,7 @@ import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
   bucket.addNotifications(stack, {
-    onAddReceipt: 'functions/receipt-document-added.handler',
+    onAddReceipt: 'packages/functions/src/receipt-document-added.handler',
   });
   const DATABASE_URL = new Config.Secret(stack, 'DATABASE_URL');
 
