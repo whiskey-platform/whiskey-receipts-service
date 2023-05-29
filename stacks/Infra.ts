@@ -28,18 +28,11 @@ export const Infra = ({ stack }: StackContext) => {
     },
   });
 
-  const powertools = LayerVersion.fromLayerVersionArn(
-    stack,
-    'PowertoolsLayer',
-    `arn:aws:lambda:${stack.region}:094274105915:layer:AWSLambdaPowertoolsTypeScript:11`
-  );
-
   return {
     bucket,
     DATABASE_URL,
     AUTH_BASE_URL,
     notificationsTopic,
-    powertools,
   };
 };
 

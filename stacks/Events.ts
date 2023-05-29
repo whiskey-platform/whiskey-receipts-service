@@ -2,7 +2,7 @@ import { StackContext, Table, Topic, use } from 'sst/constructs';
 import { Infra } from './Infra';
 
 export const EventHandling = ({ stack }: StackContext) => {
-  const { DATABASE_URL, bucket, notificationsTopic, powertools } = use(Infra);
+  const { DATABASE_URL, bucket, notificationsTopic } = use(Infra);
 
   const eventsTable = new Table(stack, 'EventsTable', {
     fields: {
@@ -26,7 +26,6 @@ export const EventHandling = ({ stack }: StackContext) => {
     defaults: {
       function: {
         bind: [DATABASE_URL, bucket, notificationsTopic, eventsTopic],
-        layers: [powertools],
         permissions: ['s3'],
       },
     },
