@@ -11,7 +11,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PostReceiptsRequestBody'
-
       responses:
         '200':
           description:
@@ -44,16 +43,42 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/GetReceiptsResponseBodyItem'
+  receipts/{id}:
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutReceiptsRequestBody'
+      parameters:
+        - name: id
+          in: path
+          required: true
+      responses:
+        '200':
+          description: The receipt was successfully updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    const: Successfully updated receipt
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSchema'
     delete:
       parameters:
         - name: id
           in: path
           required: true
-          schema:
-            type: string
       responses:
         '200':
-          description: Successfully retrieved receipts
+          description: Successfully deleted receipt
           content:
             application/json:
               schema:
@@ -68,6 +93,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorSchema'
+
   /receipts/download-url:
     get:
       parameters:
@@ -109,6 +135,16 @@ components:
         - storeName
         - timestamp
         - contentType
+    PutReceiptsRequestBody:
+      type: object
+      properties:
+        storeName:
+          type: string
+        timestamp:
+          type: number
+      required:
+        - storeName
+        - timestamp
     GetReceiptsResponseBodyItem:
       type: object
       properties:

@@ -6,6 +6,7 @@ import { Decoder } from "./helpers";
 import { validateJson } from "./validate";
 import {
   PostReceiptsRequestBody,
+  PutReceiptsRequestBody,
   GetReceiptsResponseBodyItem,
   ErrorSchema,
 } from "./models";
@@ -34,6 +35,24 @@ export const PostReceiptsRequestBodyDecoder: Decoder<PostReceiptsRequestBody> =
       );
     },
   };
+export const PutReceiptsRequestBodyDecoder: Decoder<PutReceiptsRequestBody> = {
+  definitionName: "PutReceiptsRequestBody",
+  schemaRef: "#/definitions/PutReceiptsRequestBody",
+
+  decode(json: unknown): PutReceiptsRequestBody {
+    const schema = ajv.getSchema(PutReceiptsRequestBodyDecoder.schemaRef);
+    if (!schema) {
+      throw new Error(
+        `Schema ${PutReceiptsRequestBodyDecoder.definitionName} not found`
+      );
+    }
+    return validateJson(
+      json,
+      schema,
+      PutReceiptsRequestBodyDecoder.definitionName
+    );
+  },
+};
 export const GetReceiptsResponseBodyItemDecoder: Decoder<GetReceiptsResponseBodyItem> =
   {
     definitionName: "GetReceiptsResponseBodyItem",

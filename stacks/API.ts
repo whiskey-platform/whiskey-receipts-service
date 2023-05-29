@@ -30,6 +30,8 @@ export function API({ stack, app }: StackContext) {
   const api = new Api(stack, 'api', {
     routes: {
       'POST /receipts': 'packages/api/src/functions/upload-receipt.handler',
+      'PUT /receipts/{id}': 'packages/api/src/functions/update-receipt.handler',
+      'DELETE /receipts/{id}': 'packages/api/src/functions/delete-receipt.handler',
       'GET /receipts': 'packages/api/src/functions/get-receipts.handler',
       'GET /receipts/download-url': 'packages/api/src/functions/get-download-url.handler',
     },

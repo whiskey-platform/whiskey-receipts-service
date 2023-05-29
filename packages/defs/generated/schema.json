@@ -22,6 +22,22 @@
       ],
       "$schema": "http://json-schema.org/draft-04/schema#"
     },
+    "PutReceiptsRequestBody": {
+      "type": "object",
+      "properties": {
+        "storeName": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "storeName",
+        "timestamp"
+      ],
+      "$schema": "http://json-schema.org/draft-04/schema#"
+    },
     "GetReceiptsResponseBodyItem": {
       "type": "object",
       "properties": {
@@ -77,6 +93,9 @@
   "properties": {
     "PostReceiptsRequestBody": {
       "$ref": "#/definitions/PostReceiptsRequestBody"
+    },
+    "PutReceiptsRequestBody": {
+      "$ref": "#/definitions/PutReceiptsRequestBody"
     },
     "GetReceiptsResponseBodyItem": {
       "$ref": "#/definitions/GetReceiptsResponseBodyItem"

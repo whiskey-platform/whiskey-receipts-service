@@ -11,6 +11,10 @@ export interface PostReceiptsRequestBody {
   timestamp: number;
   contentType: string;
 }
+export interface PutReceiptsRequestBody {
+  storeName: string;
+  timestamp: number;
+}
 export interface GetReceiptsResponseBodyItem {
   id: string;
   store: {
