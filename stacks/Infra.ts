@@ -1,7 +1,6 @@
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Bucket, Config, Stack, StackContext, Topic } from 'sst/constructs';
-import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
