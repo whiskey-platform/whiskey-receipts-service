@@ -61,6 +61,12 @@ const handleIngestEvent: SNSHandler = async event => {
 
       logger.info('Successfully saved receipt to database');
 
+      s3.copyObject(
+        input.sourceDataPath,
+        Bucket.ReceiptsBucket.bucketName,
+        `${id}.${extension(input.documentType)}`
+      );
+
       if (!input.fromAPI) {
         // send notification
         await sns.publishEvent(
@@ -83,12 +89,6 @@ const handleIngestEvent: SNSHandler = async event => {
         );
       }
     }
-
-    s3.copyObject(
-      input.sourceDataPath,
-      Bucket.ReceiptsBucket.bucketName,
-      `${id}.${extension(input.documentType)}`
-    );
   }
 };
 

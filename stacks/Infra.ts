@@ -8,6 +8,7 @@ export const Infra = ({ stack }: StackContext) => {
     onAddReceipt: 'packages/functions/src/receipt-document-added.handler',
   });
   const DATABASE_URL = new Config.Secret(stack, 'DATABASE_URL');
+  bucket.bind([DATABASE_URL]);
 
   const apiBaseUrl = StringParameter.valueFromLookup(
     stack,
