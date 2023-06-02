@@ -19,7 +19,7 @@ const receiptDocumentAdded: S3Handler = async event => {
           'receipts.timestamp as timestamp',
           'receipts.document_type as document_type',
         ])
-        .where('id', '=', id)
+        .where('receipts.id', '=', id)
         .executeTakeFirst();
 
       events.push({
