@@ -18,7 +18,7 @@ export const EventHandling = ({ stack }: StackContext) => {
     },
   });
   eventsTopic.bind([eventsTable]);
-  bucket.attachPermissions(['sns']);
+  bucket.bind([eventsTopic]);
 
   const topic = new Topic(stack, 'Topic', {
     subscribers: {
