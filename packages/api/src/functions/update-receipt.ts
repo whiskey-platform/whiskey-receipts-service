@@ -48,8 +48,22 @@ const updateReceipt: APIGatewayJSONBodyEventHandler<PutReceiptsRequestBody> = as
       .executeTakeFirstOrThrow();
   }
 
+  const receipt = await db
+    .selectFrom('receipts')
+    .leftJoin('stores', 'stores.id', 'receipts.store_id')
+    .select([
+      'receipts.id as id',
+      'stores.id as store_id',
+      'stores.name as store_name',
+      'receipts.timestamp as timestamp',
+      'receipts.document_type as document_type',
+    ])
+    .where('receipts.id', '=', event.pathParameters!.id!)
+    .executeTakeFirst();
+
   return json({
     message: 'Successfully updated receipt',
+    receipt,
   });
 };
 

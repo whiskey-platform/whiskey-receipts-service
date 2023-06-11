@@ -7,6 +7,7 @@ export const Infra = ({ stack }: StackContext) => {
   bucket.addNotifications(stack, {
     onAddReceipt: 'packages/functions/src/receipt-document-added.handler',
   });
+  bucket.bind([bucket]);
   const DATABASE_URL = new Config.Secret(stack, 'DATABASE_URL');
   bucket.bind([DATABASE_URL]);
 
