@@ -2,9 +2,11 @@ import { StackContext, Api, use, ApiDomainProps } from 'sst/constructs';
 import { DomainName } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Infra } from './Infra';
+import { EventHandling } from './Events';
 
 export function API({ stack, app }: StackContext) {
   const { DATABASE_URL, bucket, AUTH_BASE_URL } = use(Infra);
+  const { eventsTopic } = use(EventHandling);
   let customDomain: ApiDomainProps | undefined;
   if (!app.local && app.stage !== 'local') {
     customDomain = {
@@ -38,5 +40,5 @@ export function API({ stack, app }: StackContext) {
     customDomain,
   });
 
-  api.bind([DATABASE_URL, AUTH_BASE_URL, bucket]);
+  api.bind([DATABASE_URL, AUTH_BASE_URL, bucket, eventsTopic]);
 }
