@@ -25,6 +25,6 @@ export default {
       layers: [`arn:aws:lambda:${app.region}:094274105915:layer:AWSLambdaPowertoolsTypeScript:11`],
     });
 
-    app.stack(Infra).stack(API).stack(Housekeeping);
+    app.stack(Infra).stack(EventHandling).stack(API).stack(Housekeeping);
   },
 } satisfies SSTConfig;
