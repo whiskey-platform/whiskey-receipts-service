@@ -1,8 +1,10 @@
 import { Cron, Function, StackContext, use } from 'sst/constructs';
 import { Infra } from './Infra';
+import { EventHandling } from './Events';
 
 export const Housekeeping = ({ stack }: StackContext) => {
-  const { bucket, DATABASE_URL, eventsTopic } = use(Infra);
+  const { bucket, DATABASE_URL } = use(Infra);
+  const { eventsTopic } = use(EventHandling);
   const cleanupReceiptDocuments = new Cron(stack, 'CleanupReceiptDocuments', {
     job: {
       function: {

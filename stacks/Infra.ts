@@ -1,6 +1,6 @@
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import { Bucket, Config, Stack, StackContext, Table, Topic } from 'sst/constructs';
+import { Bucket, Config, Stack, StackContext, Topic } from 'sst/constructs';
 
 export const Infra = ({ stack }: StackContext) => {
   const bucket = new Bucket(stack, 'ReceiptsBucket');
@@ -29,40 +29,11 @@ export const Infra = ({ stack }: StackContext) => {
     },
   });
 
-  const eventsTable = new Table(stack, 'EventsTable', {
-    fields: {
-      timestamp: 'number',
-    },
-    primaryIndex: {
-      partitionKey: 'timestamp',
-    },
-  });
-  const eventsTopic = new Topic(stack, 'EventsTopic', {
-    subscribers: {
-      addToTable: 'packages/functions/src/add-event-to-table.handler',
-    },
-  });
-  eventsTopic.bind([eventsTable]);
-  bucket.bind([eventsTopic]);
-
-  const topic = new Topic(stack, 'Topic', {
-    subscribers: {
-      subscriber: 'packages/functions/src/handle-ingest-event.handler',
-    },
-    defaults: {
-      function: {
-        bind: [DATABASE_URL, bucket, notificationsTopic, eventsTopic],
-        permissions: ['s3'],
-      },
-    },
-  });
-
   return {
     bucket,
     DATABASE_URL,
     AUTH_BASE_URL,
     notificationsTopic,
-    eventsTopic,
   };
 };
 
