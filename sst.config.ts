@@ -1,7 +1,6 @@
 import { SSTConfig } from 'sst';
 import { API } from './stacks/API';
 import { Infra } from './stacks/Infra';
-import { EventHandling } from './stacks/Events';
 import { Housekeeping } from './stacks/Housekeeping';
 
 export default {
@@ -25,6 +24,6 @@ export default {
       layers: [`arn:aws:lambda:${app.region}:094274105915:layer:AWSLambdaPowertoolsTypeScript:11`],
     });
 
-    app.stack(Infra).stack(EventHandling).stack(API).stack(Housekeeping);
+    app.stack(Infra).stack(API).stack(Housekeeping);
   },
 } satisfies SSTConfig;
