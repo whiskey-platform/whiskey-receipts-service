@@ -42,7 +42,7 @@ export const Infra = ({ stack }: StackContext) => {
       addToTable: 'packages/functions/src/add-event-to-table.handler',
     },
   });
-  eventsTopic.bind([eventsTable]);
+  eventsTopic.bind([eventsTable, DATABASE_URL]);
   bucket.bind([eventsTopic]);
 
   const topic = new Topic(stack, 'Topic', {
