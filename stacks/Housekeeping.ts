@@ -4,6 +4,7 @@ import { EventHandling } from './Events';
 
 export const Housekeeping = ({ stack }: StackContext) => {
   const { bucket, DATABASE_URL } = use(Infra);
+  const { eventsTopic } = use(EventHandling);
   const cleanupReceiptDocuments = new Cron(stack, 'CleanupReceiptDocuments', {
     job: {
       function: {
@@ -13,7 +14,7 @@ export const Housekeeping = ({ stack }: StackContext) => {
     },
     schedule: 'rate(7 days)',
   });
-  cleanupReceiptDocuments.bind([bucket, DATABASE_URL /*, eventsTopic*/]);
+  cleanupReceiptDocuments.bind([bucket, DATABASE_URL, eventsTopic]);
 
   new Function(stack, 'MigrateOldReceipts', {
     handler: 'packages/functions/src/housekeeping/migrate-old-receipts.handler',
@@ -23,11 +24,11 @@ export const Housekeeping = ({ stack }: StackContext) => {
 
   new Function(stack, 'RefreshReceipts', {
     handler: 'packages/functions/src/housekeeping/send-receipts-to-documents.handler',
-    bind: [bucket, DATABASE_URL /*, eventsTopic*/],
+    bind: [bucket, DATABASE_URL, eventsTopic],
   });
 
   new Function(stack, 'DeduplicateReceipts', {
     handler: 'packages/functions/src/housekeeping/deduplicate-receipts.handler',
-    bind: [DATABASE_URL /*, eventsTopic*/],
+    bind: [DATABASE_URL, eventsTopic],
   });
 };
