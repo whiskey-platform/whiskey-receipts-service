@@ -12,7 +12,7 @@ import { APIGatewayJSONBodyEventHandler, json } from 'src/utils/lambda-utils';
 
 const updateReceipt: APIGatewayJSONBodyEventHandler<PutReceiptsRequestBody> = async event => {
   const _receipt = await db
-    .selectFrom('receipts')
+    .selectFrom('whiskey-receipts.receipts')
     .selectAll()
     .where('id', '=', event.pathParameters!.id!)
     .executeTakeFirstOrThrow();
@@ -20,21 +20,32 @@ const updateReceipt: APIGatewayJSONBodyEventHandler<PutReceiptsRequestBody> = as
   if (event.body.storeName) {
     // get store
     const store = (
-      await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+      await db
+        .selectFrom('whiskey-receipts.stores')
+        .selectAll()
+        .where('name', '=', event.body.storeName)
+        .execute()
     )[0];
 
     let storeID = store?.id;
 
     if (!store) {
-      await db.insertInto('stores').values({ name: event.body.storeName }).execute();
+      await db
+        .insertInto('whiskey-receipts.stores')
+        .values({ name: event.body.storeName })
+        .execute();
       const newStore = (
-        await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+        await db
+          .selectFrom('whiskey-receipts.stores')
+          .selectAll()
+          .where('name', '=', event.body.storeName)
+          .execute()
       )[0];
       storeID = newStore.id;
     }
 
     await db
-      .updateTable('receipts')
+      .updateTable('whiskey-receipts.receipts')
       .set({ store_id: storeID })
       .where('id', '=', event.pathParameters!.id!)
       .executeTakeFirstOrThrow();
@@ -42,23 +53,27 @@ const updateReceipt: APIGatewayJSONBodyEventHandler<PutReceiptsRequestBody> = as
 
   if (event.body.timestamp) {
     await db
-      .updateTable('receipts')
+      .updateTable('whiskey-receipts.receipts')
       .set({ timestamp: DateTime.fromMillis(event.body.timestamp).toJSDate() })
       .where('id', '=', event.pathParameters!.id!)
       .executeTakeFirstOrThrow();
   }
 
   const receipt = await db
-    .selectFrom('receipts')
-    .leftJoin('stores', 'stores.id', 'receipts.store_id')
+    .selectFrom('whiskey-receipts.receipts')
+    .leftJoin(
+      'whiskey-receipts.stores',
+      'whiskey-receipts.stores.id',
+      'whiskey-receipts.receipts.store_id'
+    )
     .select([
-      'receipts.id as id',
-      'stores.id as store_id',
-      'stores.name as store_name',
-      'receipts.timestamp as timestamp',
-      'receipts.document_type as document_type',
+      'whiskey-receipts.receipts.id as id',
+      'whiskey-receipts.stores.id as store_id',
+      'whiskey-receipts.stores.name as store_name',
+      'whiskey-receipts.receipts.timestamp as timestamp',
+      'whiskey-receipts.receipts.document_type as document_type',
     ])
-    .where('receipts.id', '=', event.pathParameters!.id!)
+    .where('whiskey-receipts.receipts.id', '=', event.pathParameters!.id!)
     .executeTakeFirst();
 
   return json({

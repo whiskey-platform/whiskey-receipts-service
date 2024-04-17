@@ -19,10 +19,18 @@ const handleIngestEvent: SNSHandler = async event => {
     let id: string;
 
     const existing = await db
-      .selectFrom('receipts')
-      .leftJoin('stores', 'stores.id', 'receipts.store_id')
-      .select(['receipts.id as id', 'stores.name as store_name', 'receipts.timestamp as timestamp'])
-      .where('stores.name', '=', input.store)
+      .selectFrom('whiskey-receipts.receipts')
+      .leftJoin(
+        'whiskey-receipts.stores',
+        'whiskey-receipts.stores.id',
+        'whiskey-receipts.receipts.store_id'
+      )
+      .select([
+        'whiskey-receipts.receipts.id as id',
+        'whiskey-receipts.stores.name as store_name',
+        'whiskey-receipts.receipts.timestamp as timestamp',
+      ])
+      .where('whiskey-receipts.stores.name', '=', input.store)
       .where('timestamp', '=', DateTime.fromMillis(input.timestamp).toJSDate())
       .execute();
 
@@ -36,21 +44,29 @@ const handleIngestEvent: SNSHandler = async event => {
     if (!existing[0]) {
       // get store
       const store = (
-        await db.selectFrom('stores').selectAll().where('name', '=', input.store).execute()
+        await db
+          .selectFrom('whiskey-receipts.stores')
+          .selectAll()
+          .where('name', '=', input.store)
+          .execute()
       )[0];
 
       let storeID = store?.id;
 
       if (!store) {
-        await db.insertInto('stores').values({ name: input.store }).execute();
+        await db.insertInto('whiskey-receipts.stores').values({ name: input.store }).execute();
         const newStore = (
-          await db.selectFrom('stores').selectAll().where('name', '=', input.store).execute()
+          await db
+            .selectFrom('whiskey-receipts.stores')
+            .selectAll()
+            .where('name', '=', input.store)
+            .execute()
         )[0];
         storeID = newStore.id;
       }
 
       await db
-        .replaceInto('receipts')
+        .replaceInto('whiskey-receipts.receipts')
         .values({
           id,
           store_id: storeID!,

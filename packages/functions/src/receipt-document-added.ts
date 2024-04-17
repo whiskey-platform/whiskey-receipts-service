@@ -11,15 +11,19 @@ const receiptDocumentAdded: S3Handler = async event => {
     if (record.eventName.startsWith('ObjectCreated:')) {
       const [_full, id, ..._rest] = record.s3.object.key.match(/(.*)\.(.*)/)!;
       const receipt = await db
-        .selectFrom('receipts')
-        .leftJoin('stores', 'stores.id', 'receipts.store_id')
+        .selectFrom('whiskey-receipts.receipts')
+        .leftJoin(
+          'whiskey-receipts.stores',
+          'whiskey-receipts.stores.id',
+          'whiskey-receipts.receipts.store_id'
+        )
         .select([
-          'receipts.id as id',
-          'stores.name as store_name',
-          'receipts.timestamp as timestamp',
-          'receipts.document_type as document_type',
+          'whiskey-receipts.receipts.id as id',
+          'whiskey-receipts.stores.name as store_name',
+          'whiskey-receipts.receipts.timestamp as timestamp',
+          'whiskey-receipts.receipts.document_type as document_type',
         ])
-        .where('receipts.id', '=', id)
+        .where('whiskey-receipts.receipts.id', '=', id)
         .executeTakeFirst();
 
       events.push({

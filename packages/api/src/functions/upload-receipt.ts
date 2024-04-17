@@ -19,10 +19,18 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
   let message: string;
 
   const existing = await db
-    .selectFrom('receipts')
-    .leftJoin('stores', 'stores.id', 'receipts.store_id')
-    .select(['receipts.id as id', 'stores.name as store_name', 'receipts.timestamp as timestamp'])
-    .where('stores.name', '=', event.body.storeName)
+    .selectFrom('whiskey-receipts.receipts')
+    .leftJoin(
+      'whiskey-receipts.stores',
+      'whiskey-receipts.stores.id',
+      'whiskey-receipts.receipts.store_id'
+    )
+    .select([
+      'whiskey-receipts.receipts.id as id',
+      'whiskey-receipts.stores.name as store_name',
+      'whiskey-receipts.receipts.timestamp as timestamp',
+    ])
+    .where('whiskey-receipts.stores.name', '=', event.body.storeName)
     .where('timestamp', '=', DateTime.fromMillis(event.body.timestamp).toJSDate())
     .execute();
 
@@ -35,21 +43,32 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
 
     // get store
     const store = (
-      await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+      await db
+        .selectFrom('whiskey-receipts.stores')
+        .selectAll()
+        .where('name', '=', event.body.storeName)
+        .execute()
     )[0];
 
     let storeID = store?.id;
 
     if (!store) {
-      await db.insertInto('stores').values({ name: event.body.storeName }).execute();
+      await db
+        .insertInto('whiskey-receipts.stores')
+        .values({ name: event.body.storeName })
+        .execute();
       const newStore = (
-        await db.selectFrom('stores').selectAll().where('name', '=', event.body.storeName).execute()
+        await db
+          .selectFrom('whiskey-receipts.stores')
+          .selectAll()
+          .where('name', '=', event.body.storeName)
+          .execute()
       )[0];
       storeID = newStore.id;
     }
 
     await db
-      .replaceInto('receipts')
+      .replaceInto('whiskey-receipts.receipts')
       .values({
         id,
         store_id: storeID!,

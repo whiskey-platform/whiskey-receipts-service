@@ -12,11 +12,11 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@aws-cdk/aws-apigatewayv2-alpha": "^2.95.1-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "2.114.1-alpha.0",
     "@tsconfig/node18": "^1.0.1",
-    "aws-cdk-lib": "2.95.1",
-    "constructs": "10.2.69",
-    "sst": "2.25.2",
+    "aws-cdk-lib": "2.132.1",
+    "constructs": "10.3.0",
+    "sst": "2.41.4",
     "typescript": "^5.0.4"
   },
   "workspaces": [

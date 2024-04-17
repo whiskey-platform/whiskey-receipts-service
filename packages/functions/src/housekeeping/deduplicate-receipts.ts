@@ -7,14 +7,18 @@ const sns = SNSService.live();
 const deduplicateReceipts: Handler = async event => {
   logger.info('Retrieving all receipts');
   const receipts = await db
-    .selectFrom('receipts')
-    .leftJoin('stores', 'stores.id', 'receipts.store_id')
+    .selectFrom('whiskey-receipts.receipts')
+    .leftJoin(
+      'whiskey-receipts.stores',
+      'whiskey-receipts.stores.id',
+      'whiskey-receipts.receipts.store_id'
+    )
     .select([
-      'receipts.id as id',
-      'stores.id as store_id',
-      'stores.name as store_name',
-      'receipts.timestamp as timestamp',
-      'receipts.document_type as document_type',
+      'whiskey-receipts.receipts.id as id',
+      'whiskey-receipts.stores.id as store_id',
+      'whiskey-receipts.stores.name as store_name',
+      'whiskey-receipts.receipts.timestamp as timestamp',
+      'whiskey-receipts.receipts.document_type as document_type',
     ])
     .execute();
   logger.info('Receipts', { count: receipts.length });
@@ -33,7 +37,7 @@ const deduplicateReceipts: Handler = async event => {
     logger.info(`Found ${dupesSet.size} duplicates. Cleaning up now...`);
 
     await db
-      .deleteFrom('receipts')
+      .deleteFrom('whiskey-receipts.receipts')
       .where(
         'id',
         'in',

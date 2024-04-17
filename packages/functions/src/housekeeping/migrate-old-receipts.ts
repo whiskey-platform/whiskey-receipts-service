@@ -40,16 +40,20 @@ const migrateOldReceipts: Handler = async event => {
     const receiptTimestamp = DateTime.fromFormat(oldReceipt.dateString, 'yyyy-MM-dd').toMillis();
 
     const receiptsFromStore = await db
-      .selectFrom('receipts')
-      .leftJoin('stores', 'stores.id', 'receipts.store_id')
+      .selectFrom('whiskey-receipts.receipts')
+      .leftJoin(
+        'whiskey-receipts.stores',
+        'whiskey-receipts.stores.id',
+        'whiskey-receipts.receipts.store_id'
+      )
       .select([
-        'receipts.id as id',
-        'stores.id as store_id',
-        'stores.name as store_name',
-        'receipts.timestamp as timestamp',
-        'receipts.document_type as document_type',
+        'whiskey-receipts.receipts.id as id',
+        'whiskey-receipts.stores.id as store_id',
+        'whiskey-receipts.stores.name as store_name',
+        'whiskey-receipts.receipts.timestamp as timestamp',
+        'whiskey-receipts.receipts.document_type as document_type',
       ])
-      .where('stores.name', '=', oldReceipt.store)
+      .where('whiskey-receipts.stores.name', '=', oldReceipt.store)
       .execute();
 
     const newReceipt = receiptsFromStore.filter(
@@ -59,16 +63,24 @@ const migrateOldReceipts: Handler = async event => {
     if (!newReceipt[0]) {
       // get store
       const store = (
-        await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
+        await db
+          .selectFrom('whiskey-receipts.stores')
+          .selectAll()
+          .where('name', '=', oldReceipt.store)
+          .execute()
       )[0];
       console.log(store);
 
       let storeID = store?.id;
 
       if (!store) {
-        await db.insertInto('stores').values({ name: oldReceipt.store }).execute();
+        await db.insertInto('whiskey-receipts.stores').values({ name: oldReceipt.store }).execute();
         const newStore = (
-          await db.selectFrom('stores').selectAll().where('name', '=', oldReceipt.store).execute()
+          await db
+            .selectFrom('whiskey-receipts.stores')
+            .selectAll()
+            .where('name', '=', oldReceipt.store)
+            .execute()
         )[0];
         storeID = newStore.id;
         console.log('new store');
@@ -78,7 +90,7 @@ const migrateOldReceipts: Handler = async event => {
       const id = ulid(receiptTimestamp);
 
       await db
-        .replaceInto('receipts')
+        .replaceInto('whiskey-receipts.receipts')
         .values({
           id,
           store_id: storeID!,
