@@ -68,13 +68,20 @@ const upload: APIGatewayJSONBodyEventHandler<PostReceiptsRequestBody> = async ev
     }
 
     await db
-      .replaceInto('whiskey-receipts.receipts')
+      .insertInto('whiskey-receipts.receipts')
       .values({
         id,
         store_id: storeID!,
         timestamp: new Date(event.body.timestamp),
         document_type: 'application/pdf',
       })
+      .onConflict(oc =>
+        oc.column('id').doUpdateSet({
+          store_id: storeID!,
+          timestamp: new Date(event.body.timestamp),
+          document_type: 'application/pdf',
+        })
+      )
       .execute();
 
     message = 'Successfully saved receipt information';

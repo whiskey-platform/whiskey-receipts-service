@@ -90,13 +90,20 @@ const migrateOldReceipts: Handler = async event => {
       const id = ulid(receiptTimestamp);
 
       await db
-        .replaceInto('whiskey-receipts.receipts')
+        .insertInto('whiskey-receipts.receipts')
         .values({
           id,
           store_id: storeID!,
           timestamp: new Date(receiptTimestamp),
           document_type: 'application/pdf',
         })
+        .onConflict(oc =>
+          oc.column('id').doUpdateSet({
+            store_id: storeID!,
+            timestamp: new Date(receiptTimestamp),
+            document_type: 'application/pdf',
+          })
+        )
         .execute();
 
       const objectKey = s3.objectKey(id, 'application/pdf');

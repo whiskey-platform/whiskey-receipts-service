@@ -66,13 +66,20 @@ const handleIngestEvent: SNSHandler = async event => {
       }
 
       await db
-        .replaceInto('whiskey-receipts.receipts')
+        .insertInto('whiskey-receipts.receipts')
         .values({
           id,
           store_id: storeID!,
           timestamp: new Date(input.timestamp),
           document_type: input.documentType,
         })
+        .onConflict(oc =>
+          oc.column('id').doUpdateSet({
+            store_id: storeID!,
+            timestamp: new Date(input.timestamp),
+            document_type: input.documentType,
+          })
+        )
         .execute();
 
       logger.info('Successfully saved receipt to database');
