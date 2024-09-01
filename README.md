@@ -2,8 +2,9 @@
 
 A Serverless CRUD API for managing Receipts.
 
-> This is actively being re-architected to simplify the code and align with an EventBridge
-> event-sourcing system - but feel free to look around at the current state!
+> This is actively being re-architected to simplify the code and align with an
+> [EventBridge event-sourcing system](https://github.com/whiskey-platform/whiskey-core/tree/main/event-infra) -
+> but feel free to look around at the current state!
 
 ## Use Cases
 
